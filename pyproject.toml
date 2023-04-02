@@ -13,6 +13,9 @@ loguru = "^0.6.0"
 kink = "^0.6.5"
 #python-gnupg = "^0.5.0"
 b2sdk = "^1.18.0"
+pydantic = "^1.10.7"
+pydantic-yaml = "^0.11.2"
+munch = "^2.5.0"
 
 
 [tool.poetry.group.dev.dependencies]
