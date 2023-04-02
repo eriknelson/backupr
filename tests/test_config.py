@@ -18,6 +18,8 @@ def assert_valid_config(actual_config: Config, expected_config_d):
 
     # TODO: Assert the exclusion set values
 
+    # assert actual_config.gnupg_home == expected_config_d['gnupgHome']
+
     # sev1_tier: SLATier = actual_config.sla_tiers[0]
     # assert sev1_tier.severity == SLASeverity.SEV1
     # expected_duration = isodate.parse_duration(

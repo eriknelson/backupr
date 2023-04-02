@@ -73,6 +73,15 @@ EXCLUSION_SET_DESC = (
     'The list of exclude patterns that are passed to tar using tar\'s '
     '--exclude flag. The default behavior is no exclusion.'
 )
+GNUPG_HOME_DESC = (
+    'gnupgHome (str, optional, default: system, most likely ~/.gnupg) - '
+    'The GNUPGHOME directory where the recipient will be looked up.'
+)
+
+# Respect GNUPGHOME env var with precedence
+DEFAULT_GNUPG_HOME = '~/.gnupg'
+gnupg_home_env = os.getenv('GNUPGHOME')
+default_gnupg_home = gnupg_home_env if gnupg_home_env else DEFAULT_GNUPG_HOME
 
 # Secrets descriptions
 B2_BUCKET_API_KEY_ID_DESC = (
@@ -95,6 +104,9 @@ class Config(YamlModel):
         default='backupr', description=BACKUP_FILE_PREFIX_DESC, alias='backupFilePrefix')
     exclusion_set: list[str] = Field(
         default=[], description=EXCLUSION_SET_DESC, alias='exclusionSet')
+    gnupg_home: str = Field(
+        default=default_gnupg_home,
+        description=GNUPG_HOME_DESC , alias='gnupgHome')
 
     # sla_tiers: list[SLATier] = Field(..., alias='slaTiers')
     # opsgenie_api_base_url: str = Field(
