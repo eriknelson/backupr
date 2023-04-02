@@ -622,6 +622,18 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "python-gnupg"
+version = "0.5.0"
+description = "A wrapper for the Gnu Privacy Guard (GPG or GnuPG)"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "python-gnupg-0.5.0.tar.gz", hash = "sha256:70758e387fc0e0c4badbcb394f61acbe68b34970a8fed7e0f7c89469fe17912a"},
+    {file = "python_gnupg-0.5.0-py2.py3-none-any.whl", hash = "sha256:345723a03e67b82aba0ea8ae2328b2e4a3906fbe2c18c4082285c3b01068f270"},
+]
+
+[[package]]
 name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
@@ -922,4 +934,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "31eab4bc0a92aa5771435cf55b205d34ba23fcd0c7bc2b2bbf6e84d53548a9b4"
+content-hash = "880afe72e0e95f8630dd30e2ef20f4cabe0ef71bac5ee6fef29b793c54575aec"
