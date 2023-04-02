@@ -3,9 +3,7 @@ import random
 import string
 import glob
 from pathlib import Path
-import yaml
 import gnupg
-from loguru import logger
 
 from backupr.util import find
 from backupr.encrypter import Encrypter
@@ -37,9 +35,6 @@ def gen_test_key(test_dir: Path) -> str:
 def test_encrypt(app_config_files):
     config_files  = app_config_files.config_files
     config_file = find(lambda f: 'example_config.yaml' in f, config_files)
-    with open(config_file, 'r', encoding='utf8') as file:
-        expected_config_d = yaml.safe_load(file)
-
     backup_dir_name = 'backup_path'
     test_path = Path(os.path.dirname(config_file))
     test_root_backup_path = test_path / backup_dir_name
