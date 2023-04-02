@@ -1,12 +1,13 @@
 import os
+import sys
 # import sys
 # from datetime import timedelta
-# from loguru import logger
+from loguru import logger
 # NOTE: I have no idea why, but the linter thinks that BaseModel isn't available
 # from pydantic. I'm abse to import it and use it as base class, so unsure what
 # the issue is.
 # pylint: disable=no-name-in-module
-from pydantic import BaseModel, Field, SecretStr, ValidationError
+from pydantic import Field, SecretStr, ValidationError
 # pylint: enable=no-name-in-module
 from pydantic_yaml import YamlModel
 
@@ -123,7 +124,8 @@ class Config(YamlModel):
     preserved_tars: int = Field(
         default=2, description=PRESERVED_TARS_DESC, alias='preservedTars')
     backup_file_prefix: str = Field(
-        default=DEFAULT_BACKUP_FILE_PREFIX, description=BACKUP_FILE_PREFIX_DESC, alias='backupFilePrefix')
+        default=DEFAULT_BACKUP_FILE_PREFIX, description=BACKUP_FILE_PREFIX_DESC,
+        alias='backupFilePrefix')
     exclusion_set: list[str] = Field(
         default=[], description=EXCLUSION_SET_DESC, alias='exclusionSet')
     gnupg_home: str = Field(

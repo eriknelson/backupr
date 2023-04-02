@@ -1,5 +1,7 @@
 import yaml
+# pylint: disable=no-name-in-module
 from pydantic import SecretStr
+# pylint: enable=no-name-in-module
 
 from backupr.config import (
     Config, Secrets
