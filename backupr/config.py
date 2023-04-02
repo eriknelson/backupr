@@ -158,8 +158,8 @@ def load() -> tuple[Config, Secrets]:
     environment variables to support local development.
     """
 
-    backupr_config_file = os.getenv(SWIFTY_CONFIG_FILE_ENV_K) or \
-        DEFAULT_SWIFTY_CONFIG_FILE
+    backupr_config_file = os.getenv(BACKUPR_CONFIG_FILE_ENV_K) or \
+        DEFAULT_BACKUPR_CONFIG_FILE
 
     backupr_secrets_file = os.getenv(BACKUPR_SECRETS_FILE_ENV_K) or \
         DEFAULT_BACKUPR_SECRETS_FILE

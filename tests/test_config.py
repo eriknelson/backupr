@@ -1,4 +1,6 @@
 import yaml
+from pydantic import SecretStr
+
 from backupr.config import (
     Config, Secrets
 )
@@ -23,26 +25,14 @@ def assert_valid_config(actual_config: Config, expected_config_d):
     assert actual_config.b2_provider_enabled == expected_config_d['b2ProviderEnabled']
     assert actual_config.b2_bucket_name == expected_config_d['b2BucketName']
 
-    # sev1_tier: SLATier = actual_config.sla_tiers[0]
-    # assert sev1_tier.severity == SLASeverity.SEV1
-    # expected_duration = isodate.parse_duration(
-        # expected_config_d['slaTiers'][0]['deltaTrigger']
-    # )
-    # assert sev1_tier.delta_trigger == expected_duration
+def test_valid_secrets(secrets: dict[str, str]):
+    valid_secrets = secrets['example_secrets.yaml']
+    expected_secrets_d = yaml.safe_load(valid_secrets)
+    actual_secrets = Secrets.parse_raw(valid_secrets)
+    assert_valid_secrets(actual_secrets, expected_secrets_d)
 
-    # sev2_tier: SLATier = actual_config.sla_tiers[1]
-    # assert sev2_tier.severity == SLASeverity.SEV2
-    # expected_duration = isodate.parse_duration(
-        # expected_config_d['slaTiers'][1]['deltaTrigger']
-    # )
-    # assert sev2_tier.delta_trigger == expected_duration
-
-    # sev3_tier: SLATier = actual_config.sla_tiers[2]
-    # assert sev3_tier.severity == SLASeverity.SEV3
-    # expected_duration = isodate.parse_duration(
-        # expected_config_d['slaTiers'][2]['deltaTrigger']
-    # )
-    # assert sev3_tier.delta_trigger == expected_duration
-
-# def assert_valid_secrets(secrets: Secrets, expected_secrets_d):
-    # assert secrets.opsgenie_api_key == SecretStr(expected_secrets_d['opsgenieApiKey'])
+def assert_valid_secrets(secrets: Secrets, expected_secrets_d):
+    assert secrets.b2_bucket_api_key_id == \
+        SecretStr(expected_secrets_d['b2BucketApiKeyId'])
+    assert secrets.b2_bucket_api_key == \
+        SecretStr(expected_secrets_d['b2BucketApiKey'])
