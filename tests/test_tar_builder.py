@@ -1,24 +1,20 @@
 import os
 import tarfile
 import glob
-# import re
-# import random
+import re
+import random
 from pathlib import Path
-# from kink import di
-# from loguru import logger
 from datetime import datetime
 import yaml
 from backupr.config import (
     Config,
-    # Secrets,
 )
 from backupr.tar_builder import TarBuilder
+from backupr.util import find
 from tests.helpers import random_file_tree, md5
 
-# def config_from_fixture(config_file):
-    # return backupr.Config(config_file=str(config_file))
-
 BACKUP_FILE_PREFIX_K = 'backupFilePrefix'
+EXCLUSION_SET_K = 'exclusionSet'
 
 def get_config_d(config_content: str):
     return yaml.safe_load(config_content)
@@ -82,68 +78,79 @@ def test_make_tarfile(tmp_config_file):
     actual_md5 = md5(actual_file)
     assert actual_md5 == known_md5
 
-# def test_should_exclude_does_exclude():
-    # test_file_str = '/git/src/github.com/eriknelson/vendor/dependent-project'
-    # test_exclusion_set = ['derp', '\\/vendor\\/']
+def test_should_exclude_does_exclude(configs: dict[str, str]):
+    config_d = get_config_d(configs['example_config.yaml'])
 
-    # config_content = get_config_content()
-    # config_content[backupr.KEY_EXCLUSION_SET] = test_exclusion_set
-    # config = backupr.Config(content=config_content)
-    # config.load()
-    # tb = backupr.TarBuilder(
-        # config.root_backup_path,config.scratch_path,
-        # config.backup_file_prefix, exclusion_set=test_exclusion_set,
-    # )
-    # assert tb.should_exclude(test_file_str)
+    test_file_str = '/git/src/github.com/eriknelson/vendor/dependent-project'
+    test_exclusion_set = ['derp', '\\/vendor\\/']
 
-# def test_should_exclude_does_not_exclude():
-    # test_file_str = '/git/src/github.com/eriknelson/vendor/dependent-project'
-    # test_exclusion_set = ['derp', '\\/vendorr\\/']
+    config_d[EXCLUSION_SET_K] = test_exclusion_set
+    config = Config.parse_raw(yaml.dump(config_d))
+    tar_builder = TarBuilder(
+        config.root_backup_path,config.scratch_path,
+        config.backup_file_prefix, exclusion_set=test_exclusion_set,
+    )
+    assert tar_builder.should_exclude(test_file_str)
 
-    # config_content = get_config_content()
-    # config_content[backupr.KEY_EXCLUSION_SET] = test_exclusion_set
-    # config = backupr.Config(content=config_content)
-    # config.load()
-    # tb = backupr.TarBuilder(
-        # config.root_backup_path,config.scratch_path,
-        # config.backup_file_prefix, exclusion_set=test_exclusion_set,
-    # )
-    # assert not tb.should_exclude(test_file_str)
+def test_correct_yaml_file_exclude_value(configs: dict[str, str]):
+    config_d = get_config_d(configs['excludes_test.yaml'])
 
-# def test_files_are_excluded(config_file):
-    # backup_dir_name = 'backup_path'
-    # test_path = Path(os.path.dirname(config_file))
-    # test_root_backup_path = test_path / backup_dir_name
-    # random_file_tree(str(test_root_backup_path))
+    test_file_str = '/git/src/github.com/eriknelson/vendor/dependent-project'
 
-    # # List files in random file tree and pick one to exclude
-    # backup_path_str = os.path.join(str(test_root_backup_path),'**/*')
-    # files = glob.glob(backup_path_str, recursive=True)
-    # exclude_full_file = random.choice(files)
-    # exclude_file_name = Path(exclude_full_file).name
+    config = Config.parse_raw(yaml.dump(config_d))
+    tar_builder = TarBuilder(
+        config.root_backup_path,config.scratch_path,
+        config.backup_file_prefix, exclusion_set=config_d[EXCLUSION_SET_K],
+    )
+    assert tar_builder.should_exclude(test_file_str)
 
-    # # Build a cofnig with the exclusion set
-    # config_content = get_config_content()
-    # config_content[backupr.KEY_EXCLUSION_SET] = [exclude_file_name]
-    # config = backupr.Config(content=config_content)
-    # config.load()
+def test_should_exclude_does_not_exclude(configs: dict[str, str]):
+    test_file_str = '/git/src/github.com/eriknelson/vendor/dependent-project'
+    test_exclusion_set = ['derp', '\\/vendorr\\/']
+    config_d = get_config_d(configs['example_config.yaml'])
 
-    # tb = backupr.TarBuilder(
-        # str(test_root_backup_path), str(test_path),
-        # 'backupr', exclusion_set=config.exclusion_set,
-    # )
-    # tb.make_tarfile()
-    # result = glob.glob(str(test_path / 'backupr-*'), recursive=False)
-    # assert len(result) == 1
+    config_d[EXCLUSION_SET_K] = test_exclusion_set
+    config = Config.parse_raw(yaml.dump(config_d))
 
-    # # Now we're going to assert that the excluded file is not present in the tar
-    # with tarfile.open(result[0], 'r:*') as f:
-        # names = f.getnames()
-        # assert len(names) != 0
-        # exclusion_rx = re.compile(exclude_file_name)
-        # for name in names:
-            # assert not exclusion_rx.search(name)
+    tar_builder = TarBuilder(
+        config.root_backup_path,config.scratch_path,
+        config.backup_file_prefix, exclusion_set=test_exclusion_set,
+    )
+    assert not tar_builder.should_exclude(test_file_str)
 
-# def test_str_to_re_exclusion_set():
-    # # TODO: Implement
-    # pass
+def test_files_are_excluded(app_config_files):
+    config_files  = app_config_files.config_files
+    config_file = find(lambda f: 'example_config.yaml' in f, config_files)
+    with open(config_file, 'r', encoding='utf8') as file:
+        expected_config_d = yaml.safe_load(file)
+
+    backup_dir_name = 'backup_path'
+    test_path = Path(os.path.dirname(config_file))
+    test_root_backup_path = test_path / backup_dir_name
+    random_file_tree(str(test_root_backup_path))
+
+    # List files in random file tree and pick one to exclude
+    backup_path_str = os.path.join(str(test_root_backup_path),'**/*')
+    files = glob.glob(backup_path_str, recursive=True)
+    exclude_full_file = random.choice(files)
+    exclude_file_name = Path(exclude_full_file).name
+
+    # Build a cofnig with the exclusion set
+    expected_config_d[EXCLUSION_SET_K] = [exclude_file_name]
+    config = Config.parse_raw(yaml.dump(expected_config_d))
+
+    tar_builder = TarBuilder(
+        str(test_root_backup_path), str(test_path),
+        'backupr', exclusion_set=config.exclusion_set,
+    )
+    tar_builder.make_tarfile()
+    result = glob.glob(str(test_path / 'backupr-*'), recursive=False)
+    assert len(result) == 1
+
+    # Now we're going to assert that the excluded file is not present in the tar
+    with tarfile.open(result[0], 'r:*') as file:
+        names = file.getnames()
+        assert len(names) != 0
+        exclusion_rx = re.compile(exclude_file_name)
+        for name in names:
+            assert not exclusion_rx.search(name)
