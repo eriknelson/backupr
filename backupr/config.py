@@ -63,6 +63,11 @@ PRESERVED_TARS_DESC = (
     'Backupr will preserve this number of tars in the scratchPath, which can '
     'be useful in a pinch.'
 )
+BACKUP_FILE_PREFIX_DESC = (
+    'backupFilePrefix (str, optional, default="backupr") - '
+    'A prefix value used for the tar. '
+    'Example: "backupr" would result in backupr-080320-110000.tar.gz'
+)
 B2_BUCKET_API_KEY_ID_DESC = (
     'b2BucketApiKeyId (str, opt) - '
     'The B2 bucket api key id.'
@@ -79,6 +84,8 @@ class Config(YamlModel):
         ..., description=SCRATCH_PATH_DESC, alias='scratchPath')
     preserved_tars: int = Field(
         default=2, description=PRESERVED_TARS_DESC, alias='preservedTars')
+    backup_file_prefix: str = Field(
+        default='backupr', description=BACKUP_FILE_PREFIX_DESC, alias='backupFilePrefix')
 
     # sla_tiers: list[SLATier] = Field(..., alias='slaTiers')
     # opsgenie_api_base_url: str = Field(

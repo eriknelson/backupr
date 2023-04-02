@@ -14,6 +14,7 @@ def assert_valid_config(actual_config: Config, expected_config_d):
     assert actual_config.root_backup_path == expected_config_d['rootBackupPath']
     assert actual_config.scratch_path == expected_config_d['scratchPath']
     assert actual_config.preserved_tars == expected_config_d['preservedTars']
+    assert actual_config.backup_file_prefix == expected_config_d['backupFilePrefix']
 
     # sev1_tier: SLATier = actual_config.sla_tiers[0]
     # assert sev1_tier.severity == SLASeverity.SEV1
