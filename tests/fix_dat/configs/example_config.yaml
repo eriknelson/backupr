@@ -24,7 +24,7 @@ backupFilePrefix: my_backup
 # patterns that are passed to tar using tar's --exclude flag. The default
 # behavior is no exclusion.
 exclusionSet:
-  - '*/vendor'
+  - '\/vendor\/'
 
 # gnupgHome (str, optional, default: system, most likely ~/.gnupg) - The
 # GNUPGHOME directory where the recipient will be looked up.
