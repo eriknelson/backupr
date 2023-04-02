@@ -68,6 +68,13 @@ BACKUP_FILE_PREFIX_DESC = (
     'A prefix value used for the tar. '
     'Example: "backupr" would result in backupr-080320-110000.tar.gz'
 )
+EXCLUSION_SET_DESC = (
+    'exclusionSet (list[str], optional, default: None) - '
+    'The list of exclude patterns that are passed to tar using tar\'s '
+    '--exclude flag. The default behavior is no exclusion.'
+)
+
+# Secrets descriptions
 B2_BUCKET_API_KEY_ID_DESC = (
     'b2BucketApiKeyId (str, opt) - '
     'The B2 bucket api key id.'
@@ -86,6 +93,8 @@ class Config(YamlModel):
         default=2, description=PRESERVED_TARS_DESC, alias='preservedTars')
     backup_file_prefix: str = Field(
         default='backupr', description=BACKUP_FILE_PREFIX_DESC, alias='backupFilePrefix')
+    exclusion_set: list[str] = Field(
+        default=[], description=EXCLUSION_SET_DESC, alias='exclusionSet')
 
     # sla_tiers: list[SLATier] = Field(..., alias='slaTiers')
     # opsgenie_api_base_url: str = Field(

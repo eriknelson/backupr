@@ -16,6 +16,8 @@ def assert_valid_config(actual_config: Config, expected_config_d):
     assert actual_config.preserved_tars == expected_config_d['preservedTars']
     assert actual_config.backup_file_prefix == expected_config_d['backupFilePrefix']
 
+    # TODO: Assert the exclusion set values
+
     # sev1_tier: SLATier = actual_config.sla_tiers[0]
     # assert sev1_tier.severity == SLASeverity.SEV1
     # expected_duration = isodate.parse_duration(
