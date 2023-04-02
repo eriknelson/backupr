@@ -190,16 +190,3 @@ def load() -> tuple[Config, Secrets]:
     logger.info(f'{secrets}')
 
     return config, secrets
-
-# class MyModel(YamlModel):
-#     """This is our custom class, with a `.yaml()` method.
-
-#     The `parse_raw()` and `parse_file()` methods are also updated to be able to
-#     handle `content_type='application/yaml'`, `protocol="yaml"` and file names
-#     ending with `.yml`/`.yaml`
-#     """
-
-#     x: int = 1
-#     e: MyEnum = MyEnum.a
-#     m: InnerModel = InnerModel()
-# NOTE: I think the above are actually defaults
