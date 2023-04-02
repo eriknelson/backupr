@@ -63,6 +63,7 @@ PRESERVED_TARS_DESC = (
     'Backupr will preserve this number of tars in the scratchPath, which can '
     'be useful in a pinch.'
 )
+DEFAULT_BACKUP_FILE_PREFIX = 'backupr'
 BACKUP_FILE_PREFIX_DESC = (
     'backupFilePrefix (str, optional, default="backupr") - '
     'A prefix value used for the tar. '
@@ -77,17 +78,32 @@ GNUPG_HOME_DESC = (
     'gnupgHome (str, optional, default: system, most likely ~/.gnupg) - '
     'The GNUPGHOME directory where the recipient will be looked up.'
 )
+# Respect GNUPGHOME env var with precedence
+DEFAULT_GNUPG_HOME = '~/.gnupg'
+gnupg_home_env = os.getenv('GNUPGHOME')
+default_gnupg_home = gnupg_home_env if gnupg_home_env else DEFAULT_GNUPG_HOME
+
 GNUPG_RECIPIENT_DESC= (
     'gnupgRecipient (str, optional, default: None) - '
     'The gpg recipient that will be used to encrypt the tar backup prior to '
     'upload. The implicit presence of this value will enable encryption. If '
     'gnupgRecipient is not set, encryption will not be enabled.'
 )
-
-# Respect GNUPGHOME env var with precedence
-DEFAULT_GNUPG_HOME = '~/.gnupg'
-gnupg_home_env = os.getenv('GNUPGHOME')
-default_gnupg_home = gnupg_home_env if gnupg_home_env else DEFAULT_GNUPG_HOME
+DEFAULT_LOG_PATH = '/var/log'
+LOG_PATH_DESC = (
+    'logPath (str, optional, default: /var/log) - '
+    'The path to where the backupr-*.log file will be stored.'
+)
+DEFAULT_B2_PROVIDER_ENABLED = True
+B2_PROVIDER_ENABLED_DESC = (
+    'b2ProviderEnabled (bool, optional, default: True) - '
+    'Enables Backblaze as the offsite storage provider.'
+)
+DEFAULT_B2_BUCKET_NAME = 'backupr'
+B2_BUCKET_NAME_DESC = (
+    'b2BucketName (str, optional, default: "backupr") - '
+    'The Backblaze bucket name where backups will be stored.'
+)
 
 # Secrets descriptions
 B2_BUCKET_API_KEY_ID_DESC = (
@@ -107,7 +123,7 @@ class Config(YamlModel):
     preserved_tars: int = Field(
         default=2, description=PRESERVED_TARS_DESC, alias='preservedTars')
     backup_file_prefix: str = Field(
-        default='backupr', description=BACKUP_FILE_PREFIX_DESC, alias='backupFilePrefix')
+        default=DEFAULT_BACKUP_FILE_PREFIX, description=BACKUP_FILE_PREFIX_DESC, alias='backupFilePrefix')
     exclusion_set: list[str] = Field(
         default=[], description=EXCLUSION_SET_DESC, alias='exclusionSet')
     gnupg_home: str = Field(
@@ -116,21 +132,15 @@ class Config(YamlModel):
     gnupg_recipient: str = Field(
         default=None,
         description=GNUPG_RECIPIENT_DESC, alias='gnupgRecipient')
-
-    # sla_tiers: list[SLATier] = Field(..., alias='slaTiers')
-    # opsgenie_api_base_url: str = Field(
-        # default=DEFAULT_OPSGENIE_API_BASE_URL,
-        # alias='opsgenieApiBaseUrl',
-        # description=OPSGENIE_API_BASE_URL_DESC,
-    # )
-    # jira_user_base_url: str = Field(
-        # ..., alias='jiraUserBaseUrl', description=JIRA_USER_BASE_URL_DESC)
-    # jira_api_base_url: str = Field(
-        # ..., alias='jiraApiBaseUrl', description=JIRA_API_BASE_URL_DESC)
-    # # TODO: Eventually want to add different reporters, could use a gsheet reporter
-    # report_dir: str = Field(default=DEFAULT_REPORT_DIR, alias='reportDir')
-    # mailgun_from: str = Field(..., alias='mailgunFrom')
-
+    log_path: str = Field(
+        default=DEFAULT_LOG_PATH,
+        description=LOG_PATH_DESC, alias='logPath')
+    b2_provider_enabled: bool = Field(
+        default=DEFAULT_B2_PROVIDER_ENABLED,
+        description=B2_PROVIDER_ENABLED_DESC, alias='b2ProviderEnabled')
+    b2_bucket_name: str = Field(
+        default=DEFAULT_B2_BUCKET_NAME,
+        description=B2_BUCKET_NAME_DESC, alias='b2BucketName')
 
 class Secrets(YamlModel):
     b2_bucket_api_key_id: SecretStr = Field(...,

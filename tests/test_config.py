@@ -20,6 +20,8 @@ def assert_valid_config(actual_config: Config, expected_config_d):
 
     assert actual_config.gnupg_home == expected_config_d['gnupgHome']
     assert actual_config.gnupg_recipient == expected_config_d['gnupgRecipient']
+    assert actual_config.b2_provider_enabled == expected_config_d['b2ProviderEnabled']
+    assert actual_config.b2_bucket_name == expected_config_d['b2BucketName']
 
     # sev1_tier: SLATier = actual_config.sla_tiers[0]
     # assert sev1_tier.severity == SLASeverity.SEV1
