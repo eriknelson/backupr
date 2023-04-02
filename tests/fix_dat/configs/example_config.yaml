@@ -1,4 +1,3 @@
-# vim: set ft=yaml:
 ################################################################################
 # Backupr Configuration
 # NOTE: Today only backblaze is supported. If backblaze is enabled, and one
@@ -54,3 +53,4 @@ b2ProviderEnabled: true
 
 # b2BucketName - The backblaze bucket name where backups will be stored.
 b2BucketName: duder-bucket
+
