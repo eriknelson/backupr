@@ -77,6 +77,12 @@ GNUPG_HOME_DESC = (
     'gnupgHome (str, optional, default: system, most likely ~/.gnupg) - '
     'The GNUPGHOME directory where the recipient will be looked up.'
 )
+GNUPG_RECIPIENT_DESC= (
+    'gnupgRecipient (str, optional, default: None) - '
+    'The gpg recipient that will be used to encrypt the tar backup prior to '
+    'upload. The implicit presence of this value will enable encryption. If '
+    'gnupgRecipient is not set, encryption will not be enabled.'
+)
 
 # Respect GNUPGHOME env var with precedence
 DEFAULT_GNUPG_HOME = '~/.gnupg'
@@ -107,6 +113,9 @@ class Config(YamlModel):
     gnupg_home: str = Field(
         default=default_gnupg_home,
         description=GNUPG_HOME_DESC , alias='gnupgHome')
+    gnupg_recipient: str = Field(
+        default=None,
+        description=GNUPG_RECIPIENT_DESC, alias='gnupgRecipient')
 
     # sla_tiers: list[SLATier] = Field(..., alias='slaTiers')
     # opsgenie_api_base_url: str = Field(

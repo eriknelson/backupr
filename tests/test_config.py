@@ -18,7 +18,8 @@ def assert_valid_config(actual_config: Config, expected_config_d):
 
     # TODO: Assert the exclusion set values
 
-    # assert actual_config.gnupg_home == expected_config_d['gnupgHome']
+    assert actual_config.gnupg_home == expected_config_d['gnupgHome']
+    assert actual_config.gnupg_recipient == expected_config_d['gnupgRecipient']
 
     # sev1_tier: SLATier = actual_config.sla_tiers[0]
     # assert sev1_tier.severity == SLASeverity.SEV1
