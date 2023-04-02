@@ -1,3 +1,5 @@
+.vscode
+launch.json
 secrets.yaml
 config.yaml
 .venv
