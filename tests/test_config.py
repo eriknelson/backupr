@@ -1,11 +1,15 @@
+import os
 import yaml
 # pylint: disable=no-name-in-module
 from pydantic import SecretStr
 # pylint: enable=no-name-in-module
+from munch import DefaultMunch
+from backupr.util import find
 
 from backupr.config import (
-    Config, Secrets
+    Config, Secrets, BACKUPR_CONFIG_FILE_ENV_K, BACKUPR_SECRETS_FILE_ENV_K,
 )
+import backupr.config as backupr_config_mod
 
 def test_valid_config(configs: dict[str, str]):
     valid_config = configs['example_config.yaml']
@@ -38,3 +42,22 @@ def assert_valid_secrets(secrets: Secrets, expected_secrets_d):
         SecretStr(expected_secrets_d['b2BucketApiKeyId'])
     assert secrets.b2_bucket_api_key == \
         SecretStr(expected_secrets_d['b2BucketApiKey'])
+
+def test_valid_load(app_config_files: DefaultMunch):
+    config_files  = app_config_files.config_files
+    config_file = find(lambda f: 'example_config.yaml' in f, config_files)
+    with open(config_file, 'r', encoding='utf8') as file:
+        expected_config_d = yaml.safe_load(file)
+
+    secrets_files = app_config_files.secrets_files
+    secrets_file = find(lambda f: 'example_secrets.yaml' in f, secrets_files)
+    with open(secrets_file, 'r', encoding='utf8') as file:
+        expected_secrets_d = yaml.safe_load(file)
+
+    os.environ[BACKUPR_CONFIG_FILE_ENV_K] = config_file
+    os.environ[BACKUPR_SECRETS_FILE_ENV_K] = secrets_file
+
+    actual_config, actual_secrets = backupr_config_mod.load()
+
+    assert_valid_config(actual_config, expected_config_d)
+    assert_valid_secrets(actual_secrets, expected_secrets_d)
