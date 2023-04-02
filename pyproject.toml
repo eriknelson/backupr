@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "backupr"
+version = "0.1.0"
+description = "Yet another backup tool by nsk"
+authors = ["Erik Nelson <erik@nsk.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+#mailgun = "^0.1.1"
+click = "^8.1.3"
+loguru = "^0.6.0"
+kink = "^0.6.5"
+#python-gnupg = "^0.5.0"
+b2sdk = "^1.18.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+#doit = "^0.36.0"
+pylint = "^2.15.9"
+#coverage = "^7.0.1"
+randomfiletree = "^1.2.0"
+
+[tool.poetry.scripts]
+backupr = "backupr:main"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
