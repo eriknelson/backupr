@@ -1,5 +1,6 @@
 import os
 import shutil
+import yaml
 import pytest
 from munch import DefaultMunch
 
@@ -48,3 +49,16 @@ def app_config_files(tmp_path) -> DefaultMunch:
         'config_files': config_files,
         'secrets_files': secrets_files,
     })
+
+T_CONFIG_FILE_NAME = 'backupr.config.yml'
+
+@pytest.fixture
+# pylint: disable=redefined-outer-name
+def tmp_config_file(tmp_path, configs):
+# pylint: enable=redefined-outer-name
+    config_content = configs['example_config.yaml']
+    config_d = yaml.safe_load(config_content)
+    _config_file = tmp_path / T_CONFIG_FILE_NAME
+    with open(_config_file, 'w', encoding='UTF-8') as file:
+        yaml.dump(config_d, file)
+    return _config_file

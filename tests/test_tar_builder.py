@@ -1,15 +1,19 @@
 import os
-import yaml
 import tarfile
 import glob
-import re
-import random
+# import re
+# import random
 from pathlib import Path
 # from kink import di
-from loguru import logger
+# from loguru import logger
 from datetime import datetime
-from backupr.config import Config, Secrets
+import yaml
+from backupr.config import (
+    Config,
+    # Secrets,
+)
 from backupr.tar_builder import TarBuilder
+from tests.helpers import random_file_tree, md5
 
 # def config_from_fixture(config_file):
     # return backupr.Config(config_file=str(config_file))
@@ -32,9 +36,9 @@ def test_output_file_no_prefix(configs: dict[str, str]):
     output_file_name = f'backupr-{day_str}-{time_str}.tar.bz2'
     output_file = os.path.join(config.scratch_path, output_file_name)
 
-    tb = TarBuilder(
+    tar_builder = TarBuilder(
         config.root_backup_path, config.scratch_path, config.backup_file_prefix)
-    assert output_file == tb.output_file
+    assert output_file == tar_builder.output_file
 
 def test_output_file_prefix_override(configs: dict[str, str]):
     config_d = get_config_d(configs['example_config.yaml'])
@@ -47,36 +51,36 @@ def test_output_file_prefix_override(configs: dict[str, str]):
     output_file_name = f'{prefix_override}-{day_str}-{time_str}.tar.bz2'
     output_file = os.path.join(config.scratch_path, output_file_name)
 
-    tb = TarBuilder(
+    tar_builder = TarBuilder(
         config.root_backup_path, config.scratch_path, config.backup_file_prefix)
-    assert output_file == tb.output_file
+    assert output_file == tar_builder.output_file
 
-# def test_make_tarfile(config_file):
-    # backup_dir_name = 'backup_path'
-    # test_path = Path(os.path.dirname(config_file))
-    # test_root_backup_path = test_path / backup_dir_name
-    # known_output_file = test_path / 'known.tar.bz2'
-    # known_output_file_str = str(known_output_file)
-    # random_file_tree(str(test_root_backup_path))
+def test_make_tarfile(tmp_config_file):
+    backup_dir_name = 'backup_path'
+    test_path = Path(os.path.dirname(tmp_config_file))
+    test_root_backup_path = test_path / backup_dir_name
+    known_output_file = test_path / 'known.tar.bz2'
+    known_output_file_str = str(known_output_file)
+    random_file_tree(str(test_root_backup_path))
 
-    # wd = os.getcwd()
-    # os.chdir(str(test_path))
-    # with tarfile.open(known_output_file_str, 'w:bz2') as tar:
-        # tar.add(backup_dir_name)
-    # os.chdir(wd)
+    working_dir = os.getcwd()
+    os.chdir(str(test_path))
+    with tarfile.open(known_output_file_str, 'w:bz2') as tar:
+        tar.add(backup_dir_name)
+    os.chdir(working_dir)
 
-    # known_md5 = md5(known_output_file_str)
+    known_md5 = md5(known_output_file_str)
 
-    # tb = backupr.TarBuilder(
-        # str(test_root_backup_path), str(test_path), 'backupr',
-    # )
-    # tb.make_tarfile()
+    tar_builder = TarBuilder(
+        str(test_root_backup_path), str(test_path), 'backupr',
+    )
+    tar_builder.make_tarfile()
 
-    # result = glob.glob(str(test_path / 'backupr-*'), recursive=False)
-    # assert len(result) == 1
-    # actual_file = result[0]
-    # actual_md5 = md5(actual_file)
-    # assert actual_md5 == known_md5
+    result = glob.glob(str(test_path / 'backupr-*'), recursive=False)
+    assert len(result) == 1
+    actual_file = result[0]
+    actual_md5 = md5(actual_file)
+    assert actual_md5 == known_md5
 
 # def test_should_exclude_does_exclude():
     # test_file_str = '/git/src/github.com/eriknelson/vendor/dependent-project'
@@ -143,4 +147,3 @@ def test_output_file_prefix_override(configs: dict[str, str]):
 # def test_str_to_re_exclusion_set():
     # # TODO: Implement
     # pass
-
