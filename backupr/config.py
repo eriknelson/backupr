@@ -11,44 +11,11 @@ from pydantic import Field, SecretStr, ValidationError
 # pylint: enable=no-name-in-module
 from pydantic_yaml import YamlModel
 
-# SEVERITY_DESC = 'severity (required, str Enum(sev1|sev2|sev3|sev4)): \
-    # The severity level of the sla tier.'
-# DELTA_TRIGGER_DESC = 'deltaTrigger (required, ISO-8601 duration): \
-    # Time delta for severity that will breach SLA.'
-# DELTA_WARN_DESC = 'deltaWarn (required, ISO-8601 duration): \
-    # Time delta before breach where a warn will be alerted'
-# SLA_TEAM_DESC = 'slaTeam (required, str): OpsGenie team respnsible for handling \
-    # issues with SLA. str.'
-# OPSGENIE_API_BASE_URL_DESC = \
-    # 'opsgenieApiBaseUrl (optional, str, default: \'https://api.opsgenie.com\'): \
-    # The base url used for the opsgenie API, default value should be fine, but it\'s \
-    # available for override.'
-# JIRA_USER_BASE_URL_DESC = \
-    # 'jiraUserBaseUrl (required, str): The base url used for the user facing \
-    # jira site, generally used for browsing user issues on the site'
-# JIRA_API_BASE_URL_DESC = \
-    # 'jiraApiBaseUrl (required, str): The base url used for the jira api'
-
-# OPSGENIE_API_KEY_DESC = 'opsgenieApiKey (required, str)'
-# JIRA_USER_DESC = 'jiraUser (required, str): User associated with the jiraApiKey'
-# JIRA_API_KEY_DESC = 'jiraApiKey (required, str)'
-
-# DEFAULT_OPSGENIE_API_BASE_URL = 'https://api.opsgenie.com'
-
 BACKUPR_CONFIG_FILE_ENV_K = 'BACKUPR_CONFIG_FILE'
 DEFAULT_BACKUPR_CONFIG_FILE = '/etc/swifty/config.yaml'
 
 BACKUPR_SECRETS_FILE_ENV_K = 'BACKUPR_SECRETS_FILE'
 DEFAULT_BACKUPR_SECRETS_FILE = '/var/backupr/vols/secrets/secrets.yaml'
-
-# DEFAULT_REPORT_DIR = '/tmp/swifty/reports'
-
-# class SLATier(BaseModel):
-    # severity: SLASeverity = Field(..., description=SEVERITY_DESC)
-    # delta_trigger: timedelta = Field(...,
-        # description=DELTA_TRIGGER_DESC, alias='deltaTrigger')
-    # delta_warn: timedelta = Field(...,
-        # description=DELTA_WARN_DESC, alias='deltaWarn')
 
 ROOT_BACKUP_PATH_DESC = (
     'rootBackupPath (str, required) - '
