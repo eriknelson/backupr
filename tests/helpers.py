@@ -4,6 +4,8 @@ from pathlib import Path
 import randomfiletree
 from backupr.util import find
 
+BACKUPR_INTEGRATION_TEST_EVK = 'BACKUPR_INTEGRATION_TEST'
+
 def random_file_tree(output_path) -> None:
     randomfiletree.iterative_gaussian_tree(
         output_path, nfiles=4.0, nfolders=2.0, maxdepth=3, repeat=2,
