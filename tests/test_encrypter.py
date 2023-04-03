@@ -4,11 +4,9 @@ import string
 import glob
 from pathlib import Path
 import gnupg
-
-from backupr.util import find
 from backupr.encrypter import Encrypter
 from backupr.tar_builder import TarBuilder
-from tests.helpers import random_file_tree, md5
+from tests.helpers import random_file_tree, md5, get_test_paths
 
 TEST_RECIPIENT = 'duder@duderington.com'
 TEST_PASSPHRASE = 'test'
@@ -21,8 +19,6 @@ def gen_test_key(test_dir: Path) -> str:
     gnupghome = test_dir / 'gnupg'
     os.makedirs(str(gnupghome))
 
-# pylint: disable=unexpected-keyword-arg
-# pylint: enable=unexpected-keyword-arg
 # NOTE: Unsure why, by pylint thinks this is not a kwarg, when it is
     gpg = gnupg.GPG(gnupghome=gnupghome)
     input_data = gpg.gen_key_input(
@@ -33,11 +29,7 @@ def gen_test_key(test_dir: Path) -> str:
     return gnupghome, key
 
 def test_encrypt(app_config_files):
-    config_files  = app_config_files.config_files
-    config_file = find(lambda f: 'example_config.yaml' in f, config_files)
-    backup_dir_name = 'backup_path'
-    test_path = Path(os.path.dirname(config_file))
-    test_root_backup_path = test_path / backup_dir_name
+    test_path, test_root_backup_path = get_test_paths(app_config_files)
     random_file_tree(str(test_root_backup_path))
     random_prefix = gen_random_prefix()
     tar_prefix = f'backupr-{random_prefix}'
