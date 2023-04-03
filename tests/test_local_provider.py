@@ -1,9 +1,7 @@
-import glob
 import os
 from pathlib import Path
-from backupr.tar_builder import TarBuilder
 from backupr.storage_provider.local_provider import LocalProvider
-from tests.helpers import random_file_tree, get_test_paths
+from tests.helpers import get_test_paths, create_random_tarfile
 
 def get_provider_path(test_path: Path):
     return test_path / 'local_provider'
@@ -16,14 +14,7 @@ def test_local_provider_upload(app_config_files):
     local_provider.init()
     assert os.path.exists(provider_path)
 
-    random_file_tree(str(test_root_backup_path))
-    tar_builder = TarBuilder(
-        str(test_root_backup_path), str(test_path), 'backupr'
-    )
-    tar_builder.make_tarfile()
-    result = glob.glob(str(test_path / 'backupr-*'), recursive=False)
-    assert len(result) == 1
-    tarfile = result[0]
+    tarfile = create_random_tarfile(test_path, test_root_backup_path)
     tarfile_name = os.path.basename(tarfile)
 
     local_provider.upload(tarfile)

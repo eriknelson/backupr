@@ -1,10 +1,12 @@
 import os
+import glob
 import hashlib
 from pathlib import Path
 import randomfiletree
 from backupr.util import find
+from backupr.tar_builder import TarBuilder
 
-BACKUPR_INTEGRATION_TEST_EVK = 'BACKUPR_INTEGRATION_TEST'
+BACKUPR_INTEGRATION_TESTS_EVK = 'BACKUPR_INTEGRATION_TESTS'
 
 def random_file_tree(output_path) -> None:
     randomfiletree.iterative_gaussian_tree(
@@ -25,3 +27,14 @@ def get_test_paths(app_config_files):
     test_path = Path(os.path.dirname(config_file))
     test_root_backup_path = test_path / backup_dir_name
     return (test_path, test_root_backup_path)
+
+def create_random_tarfile(test_path: str, test_root_backup_path: str):
+    random_file_tree(str(test_root_backup_path))
+    tar_builder = TarBuilder(
+        str(test_root_backup_path), str(test_path), 'backupr'
+    )
+    tar_builder.make_tarfile()
+    result = glob.glob(str(test_path / 'backupr-*'), recursive=False)
+    assert len(result) == 1
+    tarfile = result[0]
+    return tarfile
