@@ -1,0 +1,43 @@
+Need to finish implementing the providers.
+
+Integrate with ci
+Look into doing full integration testing with a docker container, can this
+actually run inside of a GH action?
+
+Consider the mailgun and template?
+Really want to make sure that error handling works well.
+
+================================================================================
+Taking some time to continue working towards next steps
+Goal: Actually get a working cli that will do the backup steps seen in backupr
+bash.
+X * Get the config injected
+X * tar the files
+X * Validate config with yamale
+X * Make sure to implement exclusion_set
+X * add encryption
+* abstract out provider and implement b2
+-> Starting to do this, setting up a test bucket. Don't want this testing as
+part of the normal test suite so planning to set up a doit test target for
+testing the b2 provider and sourcing the credentials. Need to set up bucket
+and config app keys
+* Need to make sure provider is cleaned out of the past file after the current
+file has been verified with a successful upload
+* maintain the scratch space
+* would be nice if the notifier could be abstracted like a pubsub and actually
+codify this into the python. Want to clean out the last logfile once everything
+has been verified as well
+* Make encryption optional based on the presence of the recipient
+* Test the cli
+* Add a test that exercises the actual upload if enabled?
+* Start to test the config with pytest
+* Integrate with CI
+NOTE: Got doit working with pylint, want to run this from a basic action and
+publish.
+
+* Test respecting GNUPGHOME
+* Test encryption is enabled due to presence of gnupgRecipient
+* Verify that backup/ gets created in the log path
+* Validate that at least one provider is enabled, and this should be tested
+* Validiate that the provider details have been provided if it has been enabled
+and test this
