@@ -11,6 +11,6 @@ FROM python:3.10-alpine AS backupr
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 COPY --from=builder /backupr/dist /tmp/backupr
-RUN pip install /tmp/backupr/*.whl && rm -rf /tmp/swifty
+RUN pip install /tmp/backupr/*.whl && rm -rf /tmp/backupr
 COPY docker/entrypoint.sh /usr/bin
 ENTRYPOINT /usr/bin/entrypoint.sh
