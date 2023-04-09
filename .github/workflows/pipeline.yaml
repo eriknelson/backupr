@@ -48,5 +48,5 @@ jobs:
           docker build -t ${{env.fqin}} -f docker/Dockerfile-slim .
       - name: Publish docker image
         run: |
-          echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u ${{github.actor}} --password-stdin
+          echo "${{secrets.GHCR_PAT}}" | docker login ghcr.io -u ${{github.actor}} --password-stdin
           docker push ${{env.fqin}}
