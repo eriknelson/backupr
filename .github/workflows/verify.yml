@@ -39,9 +39,15 @@ jobs:
       - name: Extract branch name and set as img_tag
         run: |
           echo "img_tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
       - name: Set fqin
         run: |
           echo "fqin=${{env.img_reg}}/${{env.img_repo}}/${{env.img_name}}:${{env.img_tag}}" >> $GITHUB_ENV
       - name: Build docker image
         run: |
           docker build -t ${{env.fqin}} -f docker/Dockerfile-slim .
+      - name: Publish docker image
+        if: contains(${{env.branch}}, 'release')
+        run: |
+          echo "${{secrets.GITHUB_TOKEN}}" | docker login ghcr.io -u $ --password-stdin
+          docker push ${{env.fqin}}
