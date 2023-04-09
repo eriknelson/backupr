@@ -30,7 +30,7 @@ class B2Provider():
         self.b2_api = b2.B2Api(info)
         self.b2_api.authorize_account(B2_REALM, application_key_id, application_key)
 
-    def upload(self, file: str) -> Status:
+    def upload(self, file: str):
         """Uploads a file to the StorageProvider"""
         # print(f'nsk doing the thing: {self.config.b2_bucket_name}')
         bucket = self.b2_api.get_bucket_by_name(self.config.b2_bucket_name)
@@ -45,11 +45,16 @@ class B2Provider():
         uploaded_file_url = self.b2_api.get_download_url_for_fileid(file_id)
         return uploaded_file, uploaded_file_url
 
-    def list_backups(self) -> Tuple[Status, list[str]]:
+    def list_backups(self):
         """Lists the backups present in the StorageProvider"""
+        bucket = self.b2_api.get_bucket_by_name(self.config.b2_bucket_name)
+        b2files = bucket.ls()
+        return [res[0] for res in b2files]
 
     def list_logfiles(self) -> Tuple[Status, list[str]]:
         """Lists the backups present in the StorageProvider"""
 
-    def delete(self, file_id: str) -> Status:
+    def delete(self, file_id: str, file_name: str):
         """Deletes a file in the StorageProvider"""
+        bucket = self.b2_api.get_bucket_by_name(self.config.b2_bucket_name)
+        bucket.delete_file_version(file_id, file_name)
