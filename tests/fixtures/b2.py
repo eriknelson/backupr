@@ -4,7 +4,9 @@ import pytest
 from kink import di
 from backupr.config import Config, Secrets
 import backupr.storage_provider.b2_provider as b2p
-from tests.helpers import random_flat_file_tree, get_test_paths
+from tests.conftest import fix_dat_path
+
+upload_fix_dat_path = os.path.join(fix_dat_path, 'upload')
 
 KEY_B2_PROVIDER_ENABLED = 'b2ProviderEnabled'
 KEY_B2_BUCKET_NAME = 'b2BucketName'
@@ -12,26 +14,17 @@ KEY_B2_APPLICATION_KEY_ID = 'b2BucketApiKeyId'
 KEY_B2_APPLICATION_KEY = 'b2BucketApiKey'
 
 @pytest.fixture
-def initial_b2_bucket(app_config_files, configs, secrets):
+def initial_b2_bucket(configs, secrets):
     _config, _secrets = get_config_injected_b2(configs, secrets)
 
     di[Config] = _config
     di[Secrets] = _secrets
 
-    _, test_root_backup_path = get_test_paths(app_config_files)
-    file_count = 0
-    while file_count == 0:
-        random_flat_file_tree(str(test_root_backup_path))
-        file_count = len(os.listdir(test_root_backup_path))
-
-    test_files = [
-        os.path.join(test_root_backup_path, file) for file
-        in os.listdir(test_root_backup_path)
-    ]
-    assert len(test_files) != 0
+    upload_file_names = os.listdir(upload_fix_dat_path)
+    upload_file_paths = [os.path.join(upload_fix_dat_path, fname) for fname in upload_file_names]
 
     provider = b2p.B2Provider()
-    expected_b2_files = [provider.upload(tfile)[0] for tfile in test_files]
+    expected_b2_files = [provider.upload(tfile)[0] for tfile in upload_file_paths]
 
     ret_obj = {
         'expected_b2_files': expected_b2_files,
