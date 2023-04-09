@@ -1,8 +1,12 @@
-name: Lint and Test
+name: Backupr Pipeline
 on: [push]
 jobs:
-  verify:
+  Verify-Build-Publish:
     runs-on: ubuntu-latest
+    env:
+      img_reg: 'ghcr.io'
+      img_repo: 'eriknelson'
+      img_name: 'backupr'
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -32,3 +36,12 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         uses: codecov/codecov-action@v2
+      - name: Extract branch name and set as img_tag
+        run: |
+          echo "img_tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+      - name: Set fqin
+        run: |
+          echo "fqin=${{env.img_reg}}/${{env.img_repo}}/${{env.img_name}}:${{env.img_tag}}" >> $GITHUB_ENV
+      - name: Build docker image
+        run: |
+          docker build -t ${{env.fqin}} -f docker/Dockerfile-slim .
