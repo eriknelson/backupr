@@ -1,5 +1,3 @@
-Need to finish implementing the providers.
-
 Integrate with ci
 Look into doing full integration testing with a docker container, can this
 actually run inside of a GH action?
@@ -8,6 +6,9 @@ Consider the mailgun and template?
 Really want to make sure that error handling works well.
 
 ================================================================================
+X Need to finish implementing the providers.
+X Finish list_backups function and delete
+X Need to preload the bucket with some sample files
 Taking some time to continue working towards next steps
 Goal: Actually get a working cli that will do the backup steps seen in backupr
 bash.
