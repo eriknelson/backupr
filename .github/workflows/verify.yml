@@ -18,11 +18,17 @@ jobs:
       - name: Lint
         run: |
           poetry run scripts/lint.sh
-      - name: Run all tests (unit|integration)
+      - name: Run all pytests with coverage report
         env:
+          BACKUPR_INTEGRATION_TEST: "true"
           B2_KEY_NAME: ${{ secrets.B2_KEY_NAME}}
           B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
           B2_APPLICATION_KEY_ID: ${{ secrets.B2_APPLICATION_KEY_ID }}
           B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
         run: |
-          poetry run scripts/all-tests.sh
+          poetry run coverage run -m pytest
+          poetry run coverage xml
+      - name: Upload Coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v2
