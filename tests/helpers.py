@@ -13,6 +13,11 @@ def random_file_tree(output_path) -> None:
         output_path, nfiles=4.0, nfolders=2.0, maxdepth=3, repeat=2,
     )
 
+def random_flat_file_tree(output_path) -> None:
+    randomfiletree.iterative_gaussian_tree(
+        output_path, nfiles=2.0, nfolders=0.0, maxdepth=1, repeat=1,
+    )
+
 def md5(file: str) -> str:
     hash_md5 = hashlib.md5()
     with open(file, 'rb') as _file:
