@@ -11,6 +11,10 @@ configs_fix_path = os.path.join(fix_dat_path, 'configs')
 # be split out in the future.
 secrets_fix_path = configs_fix_path
 
+pytest_plugins = [
+    'tests.fixtures.b2',
+]
+
 @pytest.fixture
 def configs() -> dict[str, str]:
     ret_dat = {}
@@ -62,3 +66,4 @@ def tmp_config_file(tmp_path, configs):
     with open(_config_file, 'w', encoding='UTF-8') as file:
         yaml.dump(config_d, file)
     return _config_file
+
