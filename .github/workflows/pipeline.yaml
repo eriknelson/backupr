@@ -1,5 +1,6 @@
 name: Backupr Pipeline
 on: [push]
+branches: ['main', 'release-**']
 jobs:
   Verify-Build-Publish:
     runs-on: ubuntu-latest
