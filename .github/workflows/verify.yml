@@ -1,11 +1,11 @@
 name: Lint and Test
 on: [push]
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9","3.10","3.11"]
+        python-version: ["3.10","3.11"]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -21,7 +21,7 @@ jobs:
       - name: Lint
         run: |
           poetry run scripts/lint.sh
-      - name: Run all tests (incuding integration tests)
+      - name: Run all tests (unit|integration)
         run: |
           poetry run scripts/all-tests.sh
       #- name: Run pytest unit tests
