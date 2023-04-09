@@ -8,34 +8,7 @@ from tests.helpers import (
     get_test_paths, BACKUPR_INTEGRATION_TESTS_EVK,
     create_random_tarfile,
 )
-
-KEY_B2_PROVIDER_ENABLED = 'b2ProviderEnabled'
-KEY_B2_BUCKET_NAME = 'b2BucketName'
-KEY_B2_APPLICATION_KEY_ID = 'b2BucketApiKeyId'
-KEY_B2_APPLICATION_KEY = 'b2BucketApiKey'
-
-def get_config_injected_b2(configs: dict[str, str], secrets: dict[str, str]):
-    config_content = configs['example_config.yaml']
-    secrets_content = secrets['example_secrets.yaml']
-    config_d = yaml.safe_load(config_content)
-    secrets_d = yaml.safe_load(secrets_content)
-
-    bucket_name = os.getenv(b2p.B2_BUCKET_NAME_EVK)
-    application_key_id = os.getenv(b2p.B2_APPLICATION_KEY_ID_EVK)
-    application_key = os.getenv(b2p.B2_APPLICATION_KEY_EVK)
-    provider_enabled = None not in (bucket_name, application_key_id, application_key)
-
-    assert bucket_name
-    assert provider_enabled
-    assert application_key_id
-    assert application_key
-
-    config_d[KEY_B2_PROVIDER_ENABLED] = provider_enabled
-    config_d[KEY_B2_BUCKET_NAME] = bucket_name
-    secrets_d[KEY_B2_APPLICATION_KEY_ID] = application_key_id
-    secrets_d[KEY_B2_APPLICATION_KEY] = application_key
-
-    return (Config.parse_obj(config_d), Secrets.parse_obj(secrets_d))
+from tests.fixtures.b2 import get_config_injected_b2
 
 def test_b2_provider_upload(
     app_config_files,
@@ -60,3 +33,27 @@ def test_b2_provider_upload(
 
     logger.info(uploaded_file_url)
     assert uploaded_file_url
+
+def test_b2_provider_list(
+    initial_b2_bucket,
+    configs: dict[str, str],
+    secrets: dict[str, str]
+):
+    # Autopass if integration testing not enabled
+    int_testing = os.getenv(BACKUPR_INTEGRATION_TESTS_EVK)
+    if int_testing != "true":
+        return
+
+    config = initial_b2_bucket['config']
+    secrets= initial_b2_bucket['config']
+    expected_b2_files = initial_b2_bucket['expected_b2_files']
+
+    provider = b2p.B2Provider()
+    actual_files = provider.list_backups()
+    assert len(expected_b2_files) != 0
+    assert len(actual_files) != 0
+    assert len(expected_b2_files) == len(actual_files)
+
+    expected_file_names = {file.file_name for file in expected_b2_files}
+    actual_file_names = {file.file_name for file in actual_files}
+    assert expected_file_names == actual_file_names
