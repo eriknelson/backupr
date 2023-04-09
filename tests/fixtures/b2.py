@@ -18,7 +18,7 @@ def initial_b2_bucket(app_config_files, configs, secrets):
     di[Config] = _config
     di[Secrets] = _secrets
 
-    test_path, test_root_backup_path = get_test_paths(app_config_files)
+    _, test_root_backup_path = get_test_paths(app_config_files)
     file_count = 0
     while file_count == 0:
         random_flat_file_tree(str(test_root_backup_path))
@@ -30,8 +30,8 @@ def initial_b2_bucket(app_config_files, configs, secrets):
     ]
     assert len(test_files) != 0
 
-    b2 = b2p.B2Provider()
-    expected_b2_files = [b2.upload(tfile)[0] for tfile in test_files]
+    provider = b2p.B2Provider()
+    expected_b2_files = [provider.upload(tfile)[0] for tfile in test_files]
 
     ret_obj = {
         'expected_b2_files': expected_b2_files,
@@ -45,7 +45,7 @@ def initial_b2_bucket(app_config_files, configs, secrets):
 
     # Cleanup the bucket
     for remote_file in expected_b2_files:
-        b2.delete(remote_file.id_, remote_file.file_name)
+        provider.delete(remote_file.id_, remote_file.file_name)
 
 def get_config_injected_b2(configs: dict[str, str], secrets: dict[str, str]):
     config_content = configs['example_config.yaml']

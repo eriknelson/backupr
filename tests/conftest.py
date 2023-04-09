@@ -66,4 +66,3 @@ def tmp_config_file(tmp_path, configs):
     with open(_config_file, 'w', encoding='UTF-8') as file:
         yaml.dump(config_d, file)
     return _config_file
-

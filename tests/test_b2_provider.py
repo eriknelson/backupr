@@ -1,7 +1,5 @@
 import os
-import yaml
 from kink import di
-from loguru import logger
 from backupr.storage_provider import b2_provider as b2p
 from backupr.config import Config, Secrets
 from tests.helpers import (
@@ -29,23 +27,19 @@ def test_b2_provider_upload(
 
     provider = b2p.B2Provider()
 
-    _, uploaded_file_url = provider.upload(tarfile)
+    uploaded_file, uploaded_file_url = provider.upload(tarfile)
 
-    logger.info(uploaded_file_url)
     assert uploaded_file_url
+    provider.delete(uploaded_file.id_, uploaded_file.file_name)
 
 def test_b2_provider_list(
     initial_b2_bucket,
-    configs: dict[str, str],
-    secrets: dict[str, str]
 ):
     # Autopass if integration testing not enabled
     int_testing = os.getenv(BACKUPR_INTEGRATION_TESTS_EVK)
     if int_testing != "true":
         return
 
-    config = initial_b2_bucket['config']
-    secrets= initial_b2_bucket['config']
     expected_b2_files = initial_b2_bucket['expected_b2_files']
 
     provider = b2p.B2Provider()
