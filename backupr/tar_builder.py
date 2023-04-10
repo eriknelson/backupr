@@ -12,7 +12,7 @@ def str_to_re_exclusion_set(re_list):
     return [re.compile(re_str) for re_str in re_list]
 
 class TarBuilder:
-    def __init__(self,src_path, output_path, backup_file_prefix, **kwargs):
+    def __init__(self, src_path, output_path, backup_file_prefix, **kwargs):
         self.src_path = src_path
         self.output_path = output_path
         self.backup_file_prefix = kwargs.get('backup_file_prefix')
@@ -34,7 +34,7 @@ class TarBuilder:
             for exclusion in self.exclusion_set:
                 logger.info(f'-> {exclusion}')
 
-    def make_tarfile(self):
+    def make_tarfile(self) -> str:
         parent_dir = os.path.dirname(self.src_path)
         leaf_dir = os.path.basename(self.src_path)
         logger.debug(f'Changing working dir to parent: {parent_dir}')
@@ -52,6 +52,7 @@ class TarBuilder:
             else:
                 tar.add(leaf_dir)
         os.chdir(working_dir)
+        return self.output_file
 
     def should_exclude(self, file: str):
         def find(pred, iterable):

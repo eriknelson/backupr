@@ -29,7 +29,7 @@ randomfiletree = "^1.2.0"
 coverage = "^7.2.3"
 
 [tool.poetry.scripts]
-backupr = "backupr:main"
+backupr = "backupr.cli:main"
 
 
 [build-system]
