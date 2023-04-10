@@ -56,7 +56,7 @@ class Engine:
 
         logger.info(f'Upoading encrypted file to provider bucket: {self.config.b2_bucket_name}')
         upload_start_time = time.time()
-        uploaded_file, uploaded_file_url = self.provider.upload(output_tar_encrypted_file)
+        _, uploaded_file_url = self.provider.upload(output_tar_encrypted_file)
         upload_end_time = time.time()
         upload_timedelta = datetime.timedelta(seconds=upload_end_time - upload_start_time)
         logger.info(f'Successfully uploaded entryped tarfile: {uploaded_file_url}')
