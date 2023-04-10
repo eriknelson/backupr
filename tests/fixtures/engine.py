@@ -1,11 +1,15 @@
 import os
 import yaml
 import pytest
+from kink import di
 from munch import DefaultMunch
+from loguru import logger
+import backupr.config as bkc
+from backupr.storage_provider.b2_provider import B2Provider
 from tests.helpers import (
     get_test_paths, create_random_tarfile, md5
 )
-from tests.fixtures.b2 import get_raw_config_injected_b2
+from tests.fixtures.b2 import get_raw_config_injected_b2, clean_b2_bucket
 from tests.test_encrypter import gen_test_key, TEST_RECIPIENT
 
 def create_run_test_prep(
@@ -59,6 +63,20 @@ def run_prep(app_config_files, configs, secrets):
 
     _run_prep = create_run_test_prep(config_file, secrets_file,
         str(test_root_backup_path), expected_tar_md5)
+
     yield _run_prep
 
-    # TODO: Cleanup b2
+    logger.debug('run_prep.teardown')
+    # This is really redundant since this happens in the engine test, but we should
+    # make sure that it's configured correctly before building the provider here
+    # to clean the bucket.
+    os.environ[bkc.BACKUPR_CONFIG_FILE_ENV_K] = _run_prep.config_file
+    os.environ[bkc.BACKUPR_SECRETS_FILE_ENV_K] = _run_prep.secrets_file
+
+    config, secrets = bkc.load()
+
+    di[bkc.Config] = config
+    di[bkc.Secrets] = secrets
+    provider = B2Provider()
+
+    clean_b2_bucket(provider)

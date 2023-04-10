@@ -2,6 +2,7 @@ import os
 import yaml
 import pytest
 from kink import di
+from loguru import logger
 from backupr.config import Config, Secrets
 import backupr.storage_provider.b2_provider as b2p
 from tests.conftest import fix_dat_path
@@ -71,3 +72,10 @@ def get_raw_config_injected_b2(
 def get_config_injected_b2(configs: dict[str, str], secrets: dict[str, str]):
     config_d, secrets_d = get_raw_config_injected_b2(configs, secrets)
     return (Config.parse_obj(config_d), Secrets.parse_obj(secrets_d))
+
+def clean_b2_bucket(provider: b2p.B2Provider):
+    logger.debug('fixtures.b2.clean_b2_bucket')
+    remote_files = provider.list_backups()
+    for remote_file in remote_files:
+        logger.debug(f'Cleaning file: {remote_file.file_name} from bucket')
+        provider.delete(remote_file.id_, remote_file.file_name)
