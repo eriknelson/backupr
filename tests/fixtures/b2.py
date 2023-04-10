@@ -44,7 +44,7 @@ def get_raw_config_injected_b2(
     configs: dict[str, str],
     secrets: dict[str, str],
     config_file_name = 'example_config.yaml',
-    secrets_file_name = 'example_config.yaml',
+    secrets_file_name = 'example_secrets.yaml',
 ):
     config_content = configs[config_file_name]
     secrets_content = secrets[secrets_file_name]
