@@ -13,6 +13,7 @@ secrets_fix_path = configs_fix_path
 
 pytest_plugins = [
     'tests.fixtures.b2',
+    'tests.fixtures.engine',
 ]
 
 @pytest.fixture
