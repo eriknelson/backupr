@@ -6,7 +6,7 @@ from backupr.storage_provider import IStorageProvider
 from backupr.storage_provider.b2_provider import B2Provider
 from backupr.encrypter import Encrypter
 from backupr.tar_builder import TarBuilder
-from backupr engine import Engine
+from backupr.engine import Engine
 
 @click.group()
 def cli():
