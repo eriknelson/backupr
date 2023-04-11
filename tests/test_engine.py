@@ -2,10 +2,9 @@ import os
 from kink import di
 from backupr.engine import Engine
 import backupr.config as bkc
-from backupr.tar_builder import TarBuilder
-from backupr.encrypter import Encrypter
 from backupr.storage_provider import IStorageProvider
-from backupr.storage_provider.b2_provider import B2Provider
+from backupr.di import init_di
+from backupr.encrypter import Encrypter
 from tests.helpers import BACKUPR_INTEGRATION_TESTS_EVK, md5
 from tests.test_encrypter import TEST_PASSPHRASE
 
@@ -19,21 +18,15 @@ def test_engine_run(run_prep):
 
     config, secrets = bkc.load()
 
-    di[bkc.Config] = config
-    di[bkc.Secrets] = secrets
-    di[TarBuilder] = TarBuilder(
-        config.root_backup_path, config.scratch_path,
-        config.backup_file_prefix, exclusion_set=config.exclusion_set,
-    )
-    encrypter = Encrypter(config.gnupg_home, config.gnupg_recipient)
-    di[Encrypter] = encrypter
-    provider = B2Provider()
-    di[IStorageProvider] = provider
+    init_di(config, secrets)
 
     engine = Engine()
     engine.run()
 
     # Assert that we've gotten out what got put in
+    provider = di[IStorageProvider]
+    encrypter = di[Encrypter]
+
     remote_files = provider.list_backups()
     assert len(remote_files) == 1
     remote_file = remote_files[0]
