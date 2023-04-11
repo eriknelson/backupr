@@ -1,5 +1,4 @@
 from datetime import datetime
-from backupr.config import Config
 from functools import reduce
 
 def deep_get(dictionary, keys, default=None):

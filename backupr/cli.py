@@ -4,11 +4,8 @@ from kink import di
 from loguru import logger
 import backupr.config as bkc
 from backupr.storage_provider import IStorageProvider
-from backupr.storage_provider.b2_provider import B2Provider
-from backupr.encrypter import Encrypter
-from backupr.tar_builder import TarBuilder
 from backupr.engine import Engine
-from backupr.util import standard_file_name
+from backupr.di import init_di
 
 DEFAULT_LOG_DIR='/var/log/backupr'
 LOG_FILE_BASENAME='backupr.log'
@@ -28,16 +25,7 @@ def cli(ctx, log_dir):
 
     logger.debug('backupr.cli')
     config, secrets = bkc.load()
-    di[bkc.Config] = config
-    di[bkc.Secrets] = secrets
-    di[TarBuilder] = TarBuilder(
-        config.root_backup_path, config.scratch_path,
-        config.backup_file_prefix, exclusion_set=config.exclusion_set,
-    )
-    encrypter = Encrypter(config.gnupg_home, config.gnupg_recipient)
-    di[Encrypter] = encrypter
-    provider = B2Provider()
-    di[IStorageProvider] = provider
+    init_di(config, secrets)
     ctx.obj['log_file'] = log_file
 
 @cli.command()

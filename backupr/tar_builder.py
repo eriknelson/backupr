@@ -2,7 +2,6 @@ import os
 import tarfile
 from tarfile import TarInfo
 import re
-from datetime import datetime
 from loguru import logger
 from backupr.util import standard_file_name
 
