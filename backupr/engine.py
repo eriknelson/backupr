@@ -54,10 +54,13 @@ class Engine:
 
         # TODO: Manage scratch path (retain 2)
 
-        logger.info(f'Upoading encrypted file to provider bucket: {self.config.b2_bucket_name}')
-        upload_start_time = time.time()
-        _, uploaded_file_url = self.provider.upload(output_tar_encrypted_file)
-        upload_end_time = time.time()
-        upload_timedelta = datetime.timedelta(seconds=upload_end_time - upload_start_time)
-        logger.info(f'Successfully uploaded entryped tarfile: {uploaded_file_url}')
-        logger.info(f'Upload time: {upload_timedelta}')
+        if self.config.b2_provider_enabled:
+            logger.info(f'Upoading encrypted file to provider bucket: {self.config.b2_bucket_name}')
+            upload_start_time = time.time()
+            _, uploaded_file_url = self.provider.upload(output_tar_encrypted_file)
+            upload_end_time = time.time()
+            upload_timedelta = datetime.timedelta(seconds=upload_end_time - upload_start_time)
+            logger.info(f'Successfully uploaded entryped tarfile: {uploaded_file_url}')
+            logger.info(f'Upload time: {upload_timedelta}')
+        else:
+            logger.info('B2 Upload disabled, skipping upload.')
