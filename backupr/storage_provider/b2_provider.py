@@ -45,6 +45,11 @@ class B2Provider():
         uploaded_file_url = self.b2_api.get_download_url_for_fileid(file_id)
         return uploaded_file, uploaded_file_url
 
+    def download_file_by_id(self, file_id, output_file: str):
+        bucket = self.b2_api.get_bucket_by_name(self.config.b2_bucket_name)
+        downloaded_file = bucket.download_file_by_id(file_id)
+        downloaded_file.save_to(output_file)
+
     def list_backups(self):
         """Lists the backups present in the StorageProvider"""
         bucket = self.b2_api.get_bucket_by_name(self.config.b2_bucket_name)
