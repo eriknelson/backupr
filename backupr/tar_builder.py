@@ -4,6 +4,7 @@ from tarfile import TarInfo
 import re
 from datetime import datetime
 from loguru import logger
+from backupr.util import standard_file_name
 
 #TODO: Verify a bad value
 def str_to_re_exclusion_set(re_list):
@@ -17,11 +18,7 @@ class TarBuilder:
         self.output_path = output_path
         self.backup_file_prefix = kwargs.get('backup_file_prefix')
         self.exclusion_set = str_to_re_exclusion_set(kwargs.get('exclusion_set'))
-        current_datetime = datetime.now()
-        self.__day_str = current_datetime.strftime('%m%d%y')
-        self.__time_str = current_datetime.strftime('%H%M')
-        output_file_name = \
-            f'{backup_file_prefix}-{self.__day_str}-{self.__time_str}.tar.bz2'
+        output_file_name = f'{standard_file_name(backup_file_prefix)}.tar.bz2'
         self.output_file = os.path.join(self.output_path, output_file_name)
 
         logger.debug('TarBuilder.__Init__')
