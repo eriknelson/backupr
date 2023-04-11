@@ -1,5 +1,3 @@
-Implement the engine!
-
 Consider the mailgun and template?
 Really want to make sure that error handling works well.
 
