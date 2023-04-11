@@ -11,7 +11,9 @@ jobs:
       img_name: 'backupr'
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Install Poetry
+        run: pipx install poetry
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
