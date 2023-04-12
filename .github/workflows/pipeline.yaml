@@ -50,7 +50,7 @@ jobs:
           echo "fqin=${{env.img_reg}}/${{env.img_repo}}/${{env.img_name}}:${{env.img_tag}}" >> $GITHUB_ENV
       - name: Build docker image
         run: |
-          docker build -t ${{env.fqin}} -f docker/Dockerfile-slim .
+          docker build -t ${{env.fqin}} -f docker/Dockerfile .
       - name: Push to ghcr.io
         uses: redhat-actions/push-to-registry@v2
         with:
