@@ -27,6 +27,7 @@ pylint = "^2.15.9"
 #coverage = "^7.0.1"
 randomfiletree = "^1.2.0"
 coverage = "^7.2.3"
+docker = "^6.0.1"
 
 [tool.poetry.scripts]
 backupr = "backupr.cli:main"
