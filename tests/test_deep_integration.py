@@ -110,6 +110,9 @@ def test_preserved_file_permissions(tmp_path):
     vols = {}
     vols[backup_root_dir] = { 'bind': CONTAINER_ROOT_BACKUP_DIR, 'mode': 'ro' }
     vols[scratch_dir] = { 'bind': CONTAINER_SCRATCH_BACKUP_DIR, 'mode': 'rw' }
+    logger.info('Binding config:')
+    logger.info(f'Source: {config_dest_dir}')
+    logger.info(f'Container volume: {CONTAINER_CONFIG_DIR}')
     vols[config_dest_dir] = { 'bind': CONTAINER_CONFIG_DIR, 'mode': 'ro' }
     vols[log_dir] = { 'bind': CONTAINER_LOG_PATH, 'mode': 'rw' }
     vols[gnupghome] = { 'bind': CONTAINER_GNUPGHOME, 'mode': 'rw' }
