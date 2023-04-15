@@ -46,7 +46,7 @@ def test_engine_run(run_prep):
     actual_md5 = md5(output_file_decrypted)
     assert run_prep.expected_tar_md5 == actual_md5
 
-def test_get_initial_backup_list(run_prep):
+def test_get_scratch_backup_list(run_prep):
     int_testing = os.getenv(BACKUPR_INTEGRATION_TESTS_EVK)
     if int_testing != "true":
         return
@@ -57,40 +57,17 @@ def test_get_initial_backup_list(run_prep):
     # Create three different tarfiles of differing ages and names to test the
     # correct sorting and preservation of tars. We expect oldest prefixed tar
     # to be cleaned after the engine runs.
-    set_config_file_with_prefix('oldest', run_prep.config_file)
-    config, secrets = bkc.load()
-
-    # Create the scratch path if it doesn't already exist
-    if not os.path.exists(config.scratch_path):
-        logger.info('Scratch path does not already exist, creating.')
-        os.makedirs(config.scratch_path)
-        logger.info(f'Created scratch dir: {config.scratch_path}')
-    else:
-        logger.info(f'Scratch path already exists: {config.scratch_path}')
-
-    init_di(config, secrets)
-    tar_builder = di[TarBuilder]
-    tar_builder.make_tarfile()
+    set_prefix_and_create_tar('oldest', run_prep.config_file)
     time.sleep(1) # Need to sleep becauase the sort is at a second granularity
-
-    set_config_file_with_prefix('older', run_prep.config_file)
-    config, secrets = bkc.load()
-    init_di(config, secrets)
-    tar_builder = di[TarBuilder]
-    tar_builder.make_tarfile()
+    set_prefix_and_create_tar('older', run_prep.config_file)
     time.sleep(1) # Need to sleep becauase the sort is at a second granularity
-
-    set_config_file_with_prefix('old', run_prep.config_file)
-    config, secrets = bkc.load()
-    init_di(config, secrets)
-    tar_builder = di[TarBuilder]
-    tar_builder.make_tarfile()
-
+    set_prefix_and_create_tar('old', run_prep.config_file)
     # Add some files to also make sure we aren't picking up any leftover gpg files
+    config = di[bkc.Config]
     Path(os.path.join(config.scratch_path, 'junk.bz2.gpg')).touch()
 
     engine = di[Engine]
-    backup_list = engine.get_initial_backup_list()
+    backup_list = engine.get_scratch_backup_list()
     assert len(backup_list) == 3
     assert re.match(r'.*old-', backup_list[0])
     assert re.match(r'.*older-', backup_list[1])
@@ -102,3 +79,17 @@ def set_config_file_with_prefix(prefix: str, config_file: str):
     config_d['backupFilePrefix'] = prefix
     with open(config_file, 'w', encoding='UTF-8') as _file:
         yaml.dump(config_d, _file)
+
+# NOTE: This does call into di and reset it, so it has side effects!
+def set_prefix_and_create_tar(prefix: str, config_file: str):
+    set_config_file_with_prefix(prefix, config_file)
+    config, secrets = bkc.load()
+    if not os.path.exists(config.scratch_path):
+        logger.info('Scratch path does not already exist, creating.')
+        os.makedirs(config.scratch_path)
+        logger.info(f'Created scratch dir: {config.scratch_path}')
+    else:
+        logger.info(f'Scratch path already exists: {config.scratch_path}')
+    init_di(config, secrets)
+    tar_builder = di[TarBuilder]
+    tar_builder.make_tarfile()
