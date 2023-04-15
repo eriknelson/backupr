@@ -32,7 +32,7 @@ FQIN = os.getenv('BACKUPR_DEEP_INT_TEST_FQIN') or \
 def test_preserved_file_permissions(tmp_path):
     logger.debug('deep-int-test.main')
 
-    project_root = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
+    project_root = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..')
     config_src_dir = os.path.join(project_root, 'config')
     config_src_file = os.path.join(config_src_dir, 'config.yaml.ex')
     secrets_src_file = os.path.join(config_src_dir, 'secrets.yaml.ex')
