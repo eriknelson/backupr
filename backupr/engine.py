@@ -53,7 +53,7 @@ class Engine:
         logger.info(f'Successfully created encrypted tarfile: {output_tar_encrypted_file}')
         logger.info(f'Encryption time: {encryption_timedelta}')
 
-        # TODO: Manage scratch path (retain 2)
+        self.clean_scratch()
 
         if self.config.b2_provider_enabled:
             logger.info(f'Uploading encrypted file to provider bucket: \
@@ -67,7 +67,7 @@ class Engine:
         else:
             logger.info('B2 Upload disabled, skipping upload.')
 
-    def get_initial_backup_list(self):
+    def get_scratch_backup_list(self):
         # Capture scratch_path files so we can clean afterwards
         scratch_path_file_names = os.listdir(self.config.scratch_path)
         scratch_path_backup_files = [
@@ -77,4 +77,24 @@ class Engine:
         ]
         # Multiplying by -1 reverses the order to ensure that the newest are first
         scratch_path_backup_files.sort(key=lambda file_name: os.path.getmtime(file_name)*-1)
+        logger.debug('Found the following backup files:')
+        for file_name in scratch_path_backup_files:
+            logger.debug(f'-> {file_name}')
         return scratch_path_backup_files
+
+    def clean_scratch(self):
+        logger.debug('engine.clean_scratch')
+        preserved_tar_count = self.config.preserved_tars
+        logger.debug(f'Preserving {preserved_tar_count} tars')
+        backup_list = self.get_scratch_backup_list()
+        # backup_list is an ordered list from newest -> oldest backup files
+        # Popping the first N number out of the front of the list will leave us
+        # with a remaining list of the files that we should clean.
+        for i in range(0, preserved_tar_count):
+            backup_list.pop(0)
+        logger.debug('Removing files after popping the preserved files:')
+        for file_name in backup_list:
+            logger.debug(f'-> {file_name}')
+
+        for file_to_remove in backup_list:
+            os.remove(file_to_remove)
