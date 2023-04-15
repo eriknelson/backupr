@@ -9,6 +9,7 @@ COPY  ./README.md /backupr/README.md
 RUN cd /backupr && poetry build --format=wheel
 
 FROM python:3.11-alpine AS backupr
+RUN apk add --no-cache gnupg gnupg-dirmngr
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 COPY --from=builder /backupr/dist /tmp/backupr
