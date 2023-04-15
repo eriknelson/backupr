@@ -32,10 +32,6 @@ jobs:
       - name: Lint
         run: |
           poetry run scripts/lint.sh
-      - name: Upload Coverage to Codecov
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-        uses: codecov/codecov-action@v2
       - name: Extract branch name and set as img_tag
         run: |
           echo "img_tag=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
@@ -53,6 +49,10 @@ jobs:
           B2_APPLICATION_KEY_ID: ${{ secrets.B2_APPLICATION_KEY_ID }}
           B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
         run: scripts/ci/all-tests.coverage.sh
+      - name: Upload Coverage to Codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        uses: codecov/codecov-action@v2
       # - name: Push to ghcr.io
       #   uses: redhat-actions/push-to-registry@v2
       #   with:

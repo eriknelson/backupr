@@ -55,7 +55,7 @@ class Engine:
         # TODO: Manage scratch path (retain 2)
 
         if self.config.b2_provider_enabled:
-            logger.info(f'Upoading encrypted file to provider bucket: {self.config.b2_bucket_name}')
+            logger.info(f'Uploading encrypted file to provider bucket: {self.config.b2_bucket_name}')
             upload_start_time = time.time()
             _, uploaded_file_url = self.provider.upload(output_tar_encrypted_file)
             upload_end_time = time.time()
