@@ -1,10 +1,9 @@
 import os
-import yaml
 import re
-import docker
+import yaml
 from kink import di
 from loguru import logger
-from pytest import fixture
+import docker
 import backupr.config as bkc
 from backupr.util import find
 from backupr.storage_provider.b2_provider import B2Provider
@@ -29,6 +28,7 @@ EXPECTED_MODE_DIR = 0o777
 FQIN = os.getenv('BACKUPR_DEEP_INT_TEST_FQIN') or \
     'ghcr.io/eriknelson/backupr:main'
 
+# pylint: disable=too-many-statements
 def test_preserved_file_permissions(tmp_path):
     logger.debug('deep-int-test.main')
 
@@ -140,10 +140,7 @@ def test_preserved_file_permissions(tmp_path):
     else:
         logger.info('Container exited successfully with a status_code: 0')
 
-    # TODO: Assert expectations here
-    backup = find(lambda f: 'gpg' in f.file_name, [
-        _file for _file in provider.list_backups()
-    ])
+    backup = find(lambda f: 'gpg' in f.file_name, provider.list_backups())
     assert backup is not None
     actual_file = os.path.join(actuals_dir, backup.file_name)
     provider.download_file_by_id(backup.id_, actual_file)
@@ -161,7 +158,11 @@ def test_preserved_file_permissions(tmp_path):
     # TODO: Should further unpack the tar and verify the file perms match
 
     clean_b2_bucket(provider)
+# pylint: enable=too-many-statements
 
+
+# TODO: These args should be used.
+# pylint: disable=unused-argument
 def set_expected_file_perms_recursive(_root, uid, guid, mode):
     # TODO: Actually need to set the file permissions here, I'm not sure this will
     # be possible without root permission however.
@@ -170,3 +171,4 @@ def set_expected_file_perms_recursive(_root, uid, guid, mode):
             os.chmod(os.path.join(root, _dir), EXPECTED_MODE_DIR)
         for _file in files:
             os.chmod(os.path.join(root, _file), EXPECTED_MODE)
+# pylint: enable=unused-argument
