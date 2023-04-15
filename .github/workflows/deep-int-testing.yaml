@@ -49,8 +49,7 @@ jobs:
           mkdir -p ${{env.backup_root}}
           randomfiletree ${{env.backup_root}} -f 2.0 -d 1.0
           chown -R 1001:1001 ${{env.backup_root}}
-          ls -ltah ${{env.backup_root}}
-          BACKUP_ROOT=${{env.backup_root}} poetry run python ./scripts/ci/deep-int-tests.py
+          BACKUP_ROOT=${{env.backup_root}} poetry run python ./scripts/ci/deep-int-test.py
       # - name: Push to ghcr.io
       #   uses: redhat-actions/push-to-registry@v2
       #   with:
