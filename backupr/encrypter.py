@@ -47,9 +47,6 @@ class Encrypter:
         }
 
         with subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE) as proc:
-            for line in proc.stdout:
-                logger.info(line)
-
             proc.wait()
             if proc.returncode != 0:
                 logger.error('Error occurred while encrypting')

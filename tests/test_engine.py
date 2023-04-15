@@ -1,10 +1,16 @@
 import os
+import re
+import time
+from pathlib import Path
+import yaml
 from kink import di
-from backupr.engine import Engine
+from loguru import logger
 import backupr.config as bkc
 from backupr.storage_provider import IStorageProvider
 from backupr.di import init_di
 from backupr.encrypter import Encrypter
+from backupr.tar_builder import TarBuilder
+from backupr.engine import Engine
 from tests.helpers import BACKUPR_INTEGRATION_TESTS_EVK, md5
 from tests.test_encrypter import TEST_PASSPHRASE
 
@@ -39,3 +45,60 @@ def test_engine_run(run_prep):
     encrypter.decrypt(output_file_encrypted, output_file_decrypted, TEST_PASSPHRASE)
     actual_md5 = md5(output_file_decrypted)
     assert run_prep.expected_tar_md5 == actual_md5
+
+def test_get_initial_backup_list(run_prep):
+    int_testing = os.getenv(BACKUPR_INTEGRATION_TESTS_EVK)
+    if int_testing != "true":
+        return
+
+    os.environ[bkc.BACKUPR_CONFIG_FILE_ENV_K] = run_prep.config_file
+    os.environ[bkc.BACKUPR_SECRETS_FILE_ENV_K] = run_prep.secrets_file
+
+    # Create three different tarfiles of differing ages and names to test the
+    # correct sorting and preservation of tars. We expect oldest prefixed tar
+    # to be cleaned after the engine runs.
+    set_config_file_with_prefix('oldest', run_prep.config_file)
+    config, secrets = bkc.load()
+
+    # Create the scratch path if it doesn't already exist
+    if not os.path.exists(config.scratch_path):
+        logger.info('Scratch path does not already exist, creating.')
+        os.makedirs(config.scratch_path)
+        logger.info(f'Created scratch dir: {config.scratch_path}')
+    else:
+        logger.info(f'Scratch path already exists: {config.scratch_path}')
+
+    init_di(config, secrets)
+    tar_builder = di[TarBuilder]
+    tar_builder.make_tarfile()
+    time.sleep(1) # Need to sleep becauase the sort is at a second granularity
+
+    set_config_file_with_prefix('older', run_prep.config_file)
+    config, secrets = bkc.load()
+    init_di(config, secrets)
+    tar_builder = di[TarBuilder]
+    tar_builder.make_tarfile()
+    time.sleep(1) # Need to sleep becauase the sort is at a second granularity
+
+    set_config_file_with_prefix('old', run_prep.config_file)
+    config, secrets = bkc.load()
+    init_di(config, secrets)
+    tar_builder = di[TarBuilder]
+    tar_builder.make_tarfile()
+
+    # Add some files to also make sure we aren't picking up any leftover gpg files
+    Path(os.path.join(config.scratch_path, 'junk.bz2.gpg')).touch()
+
+    engine = di[Engine]
+    backup_list = engine.get_initial_backup_list()
+    assert len(backup_list) == 3
+    assert re.match(r'.*old-', backup_list[0])
+    assert re.match(r'.*older-', backup_list[1])
+    assert re.match(r'.*oldest-', backup_list[2])
+
+def set_config_file_with_prefix(prefix: str, config_file: str):
+    with open(config_file, 'r', encoding='utf8') as config_content:
+        config_d = yaml.safe_load(config_content)
+    config_d['backupFilePrefix'] = prefix
+    with open(config_file, 'w', encoding='UTF-8') as _file:
+        yaml.dump(config_d, _file)

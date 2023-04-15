@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import datetime
 from loguru import logger
@@ -65,3 +66,15 @@ class Engine:
             logger.info(f'Upload time: {upload_timedelta}')
         else:
             logger.info('B2 Upload disabled, skipping upload.')
+
+    def get_initial_backup_list(self):
+        # Capture scratch_path files so we can clean afterwards
+        scratch_path_file_names = os.listdir(self.config.scratch_path)
+        scratch_path_backup_files = [
+            os.path.join(self.config.scratch_path, file_name) \
+                for file_name in scratch_path_file_names \
+                if re.match(r'.*bz2$', file_name)
+        ]
+        # Multiplying by -1 reverses the order to ensure that the newest are first
+        scratch_path_backup_files.sort(key=lambda file_name: os.path.getmtime(file_name)*-1)
+        return scratch_path_backup_files
