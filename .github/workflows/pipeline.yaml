@@ -3,7 +3,7 @@ on:
   push:
     branches: ['main', 'release-**']
 jobs:
-  Verify-Build-Publish:
+  Pipeline:
     runs-on: ubuntu-latest
     env:
       img_reg: 'ghcr.io'
@@ -11,6 +11,11 @@ jobs:
       img_name: 'backupr'
     steps:
       - uses: actions/checkout@v3
+      - name: Install pipx to support act workflow
+        if: env.ACT
+        run: |
+          apt update
+          apt install -y pipx
       - name: Install Poetry
         run: pipx install poetry
       - name: Set up Python
@@ -27,16 +32,6 @@ jobs:
       - name: Lint
         run: |
           poetry run scripts/lint.sh
-      - name: Run all pytests with coverage report
-        env:
-          BACKUPR_INTEGRATION_TESTS: "true"
-          B2_KEY_NAME: ${{ secrets.B2_KEY_NAME}}
-          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
-          B2_APPLICATION_KEY_ID: ${{ secrets.B2_APPLICATION_KEY_ID }}
-          B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
-        run: |
-          poetry run coverage run -m pytest
-          poetry run coverage xml
       - name: Upload Coverage to Codecov
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -50,11 +45,18 @@ jobs:
           echo "fqin=${{env.img_reg}}/${{env.img_repo}}/${{env.img_name}}:${{env.img_tag}}" >> $GITHUB_ENV
       - name: Build docker image
         run: |
-          docker build -t ${{env.fqin}} -f docker/Dockerfile-slim .
-      - name: Push to ghcr.io
-        uses: redhat-actions/push-to-registry@v2
-        with:
-          tags: ${{ env.fqin }}
-          registry: ghcr.io/${{ env.img_repo }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          docker build -t ${{env.fqin}} -f docker/Dockerfile .
+      - name: Run all pytests with coverage report
+        env:
+          B2_KEY_NAME: ${{ secrets.B2_KEY_NAME}}
+          B2_BUCKET_NAME: ${{ secrets.B2_BUCKET_NAME }}
+          B2_APPLICATION_KEY_ID: ${{ secrets.B2_APPLICATION_KEY_ID }}
+          B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+        run: scripts/ci/all-tests.coverage.sh
+      # - name: Push to ghcr.io
+      #   uses: redhat-actions/push-to-registry@v2
+      #   with:
+      #     tags: ${{ env.fqin }}
+      #     registry: ghcr.io/${{ env.img_repo }}
+      #     username: ${{ github.actor }}
+      #     password: ${{ secrets.GITHUB_TOKEN }}

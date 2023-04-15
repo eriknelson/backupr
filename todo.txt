@@ -1,3 +1,10 @@
+Integrate the deep-int-test into CI and make sure it can run with the other
+tests. The int tests also depend upon the image actually having been built,
+and I'm not sure that it has been so we need to make sure.
+Could actually probably do this within the script itself.
+
+Support multiple root dirs
+Need to implement the preserved tars and the rotation of the files
 list backups doesn't really make sense, just make it list files, or call into
 it from the helpers so that backups filters on the file names for tar.bz2
 or something like that.

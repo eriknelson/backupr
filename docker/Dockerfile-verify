@@ -1,5 +1,0 @@
-FROM python:3.10-alpine
-RUN python3 -m ensurepip
-RUN pip3 install --no-cache --upgrade poetry
-COPY  . /backupr
-RUN cd /backupr && python3 -m venv .venv && poetry install

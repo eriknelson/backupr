@@ -21,12 +21,11 @@ python-gnupg = "^0.5.0"
 
 
 [tool.poetry.group.dev.dependencies]
+pytest-cov = "^4.0.0"
 pytest = "^7.2.0"
-#doit = "^0.36.0"
 pylint = "^2.15.9"
-#coverage = "^7.0.1"
 randomfiletree = "^1.2.0"
-coverage = "^7.2.3"
+docker = "^6.0.1"
 
 [tool.poetry.scripts]
 backupr = "backupr.cli:main"
