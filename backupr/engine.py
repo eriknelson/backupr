@@ -66,6 +66,7 @@ class Engine:
             logger.info('B2 Upload disabled, skipping upload.')
 
         self.clean_scratch()
+        self.clean_bucket()
 
     def get_scratch_backup_list(self):
         # Capture scratch_path files so we can clean afterwards
@@ -116,3 +117,32 @@ class Engine:
 
         for file_to_remove in encrypted_scratch_path_files:
             os.remove(file_to_remove)
+
+    def clean_bucket(self):
+        logger.debug('engine.clean_bucket')
+        remote_files = self.provider.list_backups()
+
+        gpg_backups = [
+            remote_file for remote_file in remote_files \
+                if re.match(r'.*\.gpg$', remote_file.file_name)
+        ]
+        gpg_backups.sort(reverse=True, key=lambda rfile: rfile.upload_timestamp)
+
+        log_backups = [
+            remote_file for remote_file in remote_files \
+                if re.match(r'.*\.log$', remote_file.file_name)
+        ]
+        log_backups.sort(reverse=True, key=lambda rfile: rfile.upload_timestamp)
+
+        if len(gpg_backups) > 1:
+            gpg_backups.pop(0)
+            logger.info('Trimming gpg backup from bucket:')
+            for gpg_backup_file in gpg_backups:
+                logger.info(f'-> {gpg_backup_file.file_name}')
+                self.provider.delete(gpg_backup_file.id_, gpg_backup_file.file_name)
+        if len(log_backups) > 1:
+            log_backups.pop(0)
+            logger.info('Trimming log files from bucket:')
+            for log_backup_file in log_backups:
+                logger.info(f'-> {log_backup_file.file_name}')
+                self.provider.delete(log_backup_file.id_, log_backup_file.file_name)

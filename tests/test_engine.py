@@ -11,6 +11,7 @@ from backupr.di import init_di
 from backupr.encrypter import Encrypter
 from backupr.tar_builder import TarBuilder
 from backupr.engine import Engine
+from backupr.storage_provider.b2_provider import B2Provider
 from backupr.util import find
 from tests.helpers import BACKUPR_INTEGRATION_TESTS_EVK, md5
 from tests.test_encrypter import TEST_PASSPHRASE
@@ -66,6 +67,57 @@ def test_clean_scratch(run_prep):
     all_scratch_path_files_names = os.listdir(config.scratch_path)
     gpg_files = find(lambda g: re.match(r'.*\.gpg$', g), all_scratch_path_files_names)
     assert gpg_files is None
+
+def test_clean_bucket(run_prep):
+    int_testing = os.getenv(BACKUPR_INTEGRATION_TESTS_EVK)
+    if int_testing != "true":
+        return
+
+    os.environ[bkc.BACKUPR_CONFIG_FILE_ENV_K] = run_prep.config_file
+    os.environ[bkc.BACKUPR_SECRETS_FILE_ENV_K] = run_prep.secrets_file
+    config, secrets = bkc.load()
+    init_di(config, secrets)
+
+    provider = di[B2Provider]
+
+    older_gpg_file = os.path.join(config.scratch_path, 'older.gpg')
+    old_gpg_file = os.path.join(config.scratch_path, 'old.gpg')
+    older_log_file = os.path.join(config.scratch_path, 'older.log')
+    old_log_file = os.path.join(config.scratch_path, 'old.log')
+
+    # Create the scratch path if it doesn't already exist
+    if not os.path.exists(config.scratch_path):
+        logger.info('Scratch path does not already exist, creating.')
+        os.makedirs(config.scratch_path)
+        logger.info(f'Created scratch dir: {config.scratch_path}')
+    else:
+        logger.info(f'Scratch path already exists: {config.scratch_path}')
+
+    for file in [older_gpg_file, old_gpg_file, older_log_file, old_log_file]:
+        Path(file).touch()
+        provider.upload(file)
+
+    remote_files = provider.list_backups()
+    for remote_file in remote_files:
+        logger.info(remote_file)
+
+    engine = Engine()
+    engine.clean_bucket()
+
+    remote_files = provider.list_backups()
+    assert len(remote_files) == 2
+    gpg_backups = [
+        remote_file for remote_file in remote_files \
+            if re.match(r'.*\.gpg$', remote_file.file_name)
+    ]
+    log_backups = [
+        remote_file for remote_file in remote_files \
+            if re.match(r'.*\.log$', remote_file.file_name)
+    ]
+    assert len(gpg_backups) == 1
+    assert len(log_backups) == 1
+    assert re.match(r'.*old\.gpg', gpg_backups[0].file_name)
+    assert re.match(r'.*old\.log', log_backups[0].file_name)
 
 def test_get_scratch_backup_list(run_prep):
     int_testing = os.getenv(BACKUPR_INTEGRATION_TESTS_EVK)
