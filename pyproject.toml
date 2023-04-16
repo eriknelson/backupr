@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nsk-backupr"
-version = "0.2.0"
+version = "0.2.1"
 description = "A backup runner designed to tar up a root directory, optionally encrypt it, and upload to remote storage."
 authors = ["Erik Nelson <erik@nsk.io>"]
 readme = "README.md"
