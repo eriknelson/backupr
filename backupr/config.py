@@ -57,11 +57,6 @@ GNUPG_RECIPIENT_DESC= (
     'upload. The implicit presence of this value will enable encryption. If '
     'gnupgRecipient is not set, encryption will not be enabled.'
 )
-DEFAULT_LOG_PATH = '/var/log'
-LOG_PATH_DESC = (
-    'logPath (str, optional, default: /var/log) - '
-    'The path to where the backupr-*.log file will be stored.'
-)
 DEFAULT_B2_PROVIDER_ENABLED = True
 B2_PROVIDER_ENABLED_DESC = (
     'b2ProviderEnabled (bool, optional, default: True) - '
@@ -101,9 +96,6 @@ class Config(YamlModel):
     gnupg_recipient: str = Field(
         default=None,
         description=GNUPG_RECIPIENT_DESC, alias='gnupgRecipient')
-    log_path: str = Field(
-        default=DEFAULT_LOG_PATH,
-        description=LOG_PATH_DESC, alias='logPath')
     b2_provider_enabled: bool = Field(
         default=DEFAULT_B2_PROVIDER_ENABLED,
         description=B2_PROVIDER_ENABLED_DESC, alias='b2ProviderEnabled')
