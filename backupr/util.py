@@ -1,5 +1,4 @@
 from datetime import datetime
-from functools import reduce
 
 def find(predicate, seq):
     return next(filter(predicate, seq), None)
