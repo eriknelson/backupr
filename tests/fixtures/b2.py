@@ -25,6 +25,7 @@ def initial_b2_bucket(configs, secrets):
     upload_file_paths = [os.path.join(upload_fix_dat_path, fname) for fname in upload_file_names]
 
     provider = b2p.B2Provider()
+    clean_b2_bucket(provider)
     expected_b2_files = [provider.upload(tfile)[0] for tfile in upload_file_paths]
 
     ret_obj = {

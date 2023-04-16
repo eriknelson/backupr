@@ -1,20 +1,26 @@
-Integrate the deep-int-test into CI and make sure it can run with the other
-tests. The int tests also depend upon the image actually having been built,
-and I'm not sure that it has been so we need to make sure.
-Could actually probably do this within the script itself.
+[v1.0]
+Clean up the bucket
+Remove the logs config option
 
+Going to need a solution to mailing out the logs that isn't susceptible to errors
+so that when engine.run bombs out, the results are still mailed.
+Consider the mailgun and template?
+
+[Feature Enhancements]
 Support multiple root dirs
-Need to implement the preserved tars and the rotation of the files
+
+[Cleanup]
 list backups doesn't really make sense, just make it list files, or call into
 it from the helpers so that backups filters on the file names for tar.bz2
 or something like that.
 
-Remove the logs config option
-Going to need to add mailgun support to the config
-Consider the mailgun and template?
-Really want to make sure that error handling works well.
-
 ================================================================================
+X Need to implement the preserved tars and the rotation of the files
+X Integrate the deep-int-test into CI and make sure it can run with the other
+tests. The int tests also depend upon the image actually having been built,
+and I'm not sure that it has been so we need to make sure.
+Could actually probably do this within the script itself.
+X Test the clean function of engine and integrate it with engine
 X Integrate with ci
 X Need to finish implementing the providers.
 X Finish list_backups function and delete
