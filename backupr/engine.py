@@ -53,8 +53,6 @@ class Engine:
         logger.info(f'Successfully created encrypted tarfile: {output_tar_encrypted_file}')
         logger.info(f'Encryption time: {encryption_timedelta}')
 
-        self.clean_scratch()
-
         if self.config.b2_provider_enabled:
             logger.info(f'Uploading encrypted file to provider bucket: \
                 {self.config.b2_bucket_name}')
@@ -66,6 +64,8 @@ class Engine:
             logger.info(f'Upload time: {upload_timedelta}')
         else:
             logger.info('B2 Upload disabled, skipping upload.')
+
+        self.clean_scratch()
 
     def get_scratch_backup_list(self):
         # Capture scratch_path files so we can clean afterwards
@@ -90,11 +90,29 @@ class Engine:
         # backup_list is an ordered list from newest -> oldest backup files
         # Popping the first N number out of the front of the list will leave us
         # with a remaining list of the files that we should clean.
-        for i in range(0, preserved_tar_count):
-            backup_list.pop(0)
-        logger.debug('Removing files after popping the preserved files:')
-        for file_name in backup_list:
+        if len(backup_list) > preserved_tar_count:
+            for _ in range(0, preserved_tar_count):
+                backup_list.pop(0)
+
+            logger.debug('Removing files after popping the preserved files:')
+            for file_name in backup_list:
+                logger.debug(f'-> {file_name}')
+
+            for file_to_remove in backup_list:
+                os.remove(file_to_remove)
+
+        # Remove all the gpg files
+        encrypted_scratch_path_file_names = os.listdir(self.config.scratch_path)
+        if len(encrypted_scratch_path_file_names) > 0:
+            encrypted_scratch_path_files = [
+                os.path.join(self.config.scratch_path, file_name) \
+                    for file_name in encrypted_scratch_path_file_names \
+                    if re.match(r'.*gpg$', file_name)
+            ]
+
+        logger.debug('Removing leftover gpg files:')
+        for file_name in encrypted_scratch_path_files:
             logger.debug(f'-> {file_name}')
 
-        for file_to_remove in backup_list:
+        for file_to_remove in encrypted_scratch_path_files:
             os.remove(file_to_remove)
