@@ -42,6 +42,10 @@ gnupg_home: /home/duder/.backupr-gnupg
 # not be enabled.
 gnupg_recipient: duder@decker.zone
 
+# log_path - (str, optional, default: /var/log/backupr) - The directory where logs will
+# be stored.
+# log_path: /backupr/logs
+
 ################################################################################
 # Offsite Storage Provider Configuration
 # NOTE: Today only backblaze is supported. If backblaze is enabled, and one
