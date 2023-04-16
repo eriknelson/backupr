@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "backupr"
-version = "0.1.0"
+version = "0.2.0"
 description = "Yet another backup tool by nsk"
 authors = ["Erik Nelson <erik@nsk.io>"]
 readme = "README.md"
