@@ -1,2 +1,9 @@
 ---
 # tasks file for backupr
+- name: Create backupr install path
+  file:
+    path: "{{ backupr_install_path }}"
+    state: directory
+    owner: "{{ backupr_user }}"
+    group: "{{ backupr_group }}"
+    mode: "0770"

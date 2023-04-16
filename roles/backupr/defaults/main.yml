@@ -1,2 +1,5 @@
 ---
-# defaults file for backupr
+backupr_install_path: /opt/backupr
+log_path: /var/log/backupr
+backupr_timer_oncalendar: "*-*-* 01:00:00"
+systemd_custom_install_path: /etc/systemd/system
