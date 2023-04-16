@@ -1,9 +1,12 @@
 [tool.poetry]
-name = "backupr"
+name = "nsk-backupr"
 version = "0.2.0"
-description = "Yet another backup tool by nsk"
+description = "A backup runner designed to tar up a root directory, optionally encrypt it, and upload to remote storage."
 authors = ["Erik Nelson <erik@nsk.io>"]
 readme = "README.md"
+packages = [
+  { include = "backupr" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -19,6 +22,10 @@ munch = "^2.5.0"
 pyyaml = "^6.0"
 python-gnupg = "^0.5.0"
 
+[tool.poetry.urls]
+"Homepage" = "https://github.com/eriknelson/backupr"
+"Repository" = "https://github.com/eriknelson/backupr"
+"Bug Tracker" = "https://github.com/eriknelson/backupr/issues"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^4.0.0"
