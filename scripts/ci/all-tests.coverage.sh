@@ -29,5 +29,9 @@ export B2_APPLICATION_KEY_ID="$B2_APPLICATION_KEY_ID"
 export B2_APPLICATION_KEY="$B2_APPLICATION_KEY"
 
 pushd $projectRoot
-poetry run pytest -s --cov-report=xml --cov=backupr tests/
+if [[ -n "$TEST_OUTPUT" ]]; then
+  poetry run pytest -s --cov-report=xml --cov=backupr tests/
+else
+  poetry run pytest --cov-report=xml --cov=backupr tests/
+fi
 popd
